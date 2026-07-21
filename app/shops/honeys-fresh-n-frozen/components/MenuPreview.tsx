@@ -37,6 +37,11 @@ export default function MenuPreview() {
       <div className="grid grid-cols-2 gap-3.5 mb-6">
         {previewCategories.map((key, index) => {
           const category = menuCategories[key]
+          const startingPrice = Math.min(
+            ...category.items
+              .map((item) => Number(item.price.match(/\d+(?:\.\d+)?/)?.[0] ?? NaN))
+              .filter((price) => Number.isFinite(price) && price > 0)
+          )
           return (
             <Link key={key} href={`/menu?cat=${key}`} className="block">
               <motion.div
@@ -61,6 +66,11 @@ export default function MenuPreview() {
                     background: 'linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.82) 28%, rgba(0,0,0,0.54) 55%, rgba(0,0,0,0.18) 82%, rgba(0,0,0,0.04) 100%)',
                   }}
                 />
+                {Number.isFinite(startingPrice) && (
+                  <div className="absolute left-3 top-3 z-10 rounded-full border border-white/30 bg-black/45 px-2.5 py-1 text-[10px] font-extrabold text-white shadow-lg backdrop-blur-md">
+                    From ₹{startingPrice}
+                  </div>
+                )}
                 <div className="absolute top-3 right-3 w-11 h-11 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center z-10 bg-white/15 border border-white/25 shadow-lg backdrop-blur-md">
                   <span className="text-xl sm:text-2xl">{category.icon}</span>
                 </div>
@@ -68,7 +78,7 @@ export default function MenuPreview() {
                   <h3 className="text-white font-bold text-base sm:text-lg mb-0.5 leading-tight line-clamp-2" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.85)' }}>
                     {category.name}
                   </h3>
-                  <p className="text-slate-300 text-xs sm:text-sm font-medium leading-snug mb-2.5 line-clamp-2" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>
+                  <p className="mb-2.5 overflow-hidden text-ellipsis whitespace-nowrap text-[10px] font-semibold leading-tight text-slate-200 sm:text-[11px]" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.7)' }}>
                     {category.shortDescription}
                   </p>
                   <span className="inline-flex items-center gap-1.5 text-slate-100 font-semibold text-xs sm:text-sm bg-white/14 hover:bg-white/22 px-3 py-1.5 rounded-full transition-colors border border-white/20 backdrop-blur-md">

@@ -196,12 +196,14 @@ export default function InstagramFeed() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ delay: 0.12, duration: 0.3 }}
-        className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/10 px-6 py-4 font-semibold text-white shadow-[0_18px_34px_rgba(221,42,123,0.18)] transition-all hover:shadow-[0_22px_40px_rgba(221,42,123,0.24)]"
+        className="mt-5 flex h-[52px] w-full items-center justify-center gap-2 overflow-hidden rounded-[18px] border-0 px-6 font-bold text-white shadow-[0_18px_34px_rgba(221,42,123,0.22)] outline outline-1 outline-white/15 transition-all hover:shadow-[0_22px_40px_rgba(221,42,123,0.28)]"
         style={{
           background: 'linear-gradient(90deg, #833AB4 0%, #DD2A7B 52%, #F58529 100%)',
         }}
       >
-        <Instagram className="w-5 h-5" />
+        <span className="grid h-7 w-7 place-items-center rounded-full bg-white p-1.5 shadow-sm">
+          <Image src="/social.png" alt="Instagram" width={22} height={22} className="h-full w-full object-contain" />
+        </span>
         View Full Instagram
         <ArrowRight className="w-4 h-4" />
       </motion.a>

@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Sparkles, Leaf, ChefHat, Heart } from 'lucide-react'
+import Image from 'next/image'
 
 const services = [
   {
@@ -9,24 +10,28 @@ const services = [
     icon: Sparkles,
     title: 'Clean & Hygienic Kitchen',
     description: 'Freshly prepared food in a well-maintained environment.',
+    image: '/gallery/unnamed.webp',
   },
   {
     id: 'service-2',
     icon: Leaf,
     title: 'Pure Vegetarian',
     description: '100% vegetarian menu crafted with quality ingredients.',
+    image: '/gallery/unnamed (1).webp',
   },
   {
     id: 'service-3',
     icon: ChefHat,
     title: 'Freshly Prepared Daily',
     description: 'Every dish is prepared fresh in our kitchen.',
+    image: '/gallery/unnamed (2).webp',
   },
   {
     id: 'service-4',
     icon: Heart,
     title: 'Healthy & Balanced Meals',
     description: 'Tasteful food made with care and proper preparation standards.',
+    image: '/gallery/unnamed (3).webp',
   },
 ]
 
@@ -50,7 +55,7 @@ export default function Services() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-3.5">
         {services.map((service, index) => {
           const IconComponent = service.icon
           return (
@@ -60,15 +65,26 @@ export default function Services() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: index * 0.05, duration: 0.3, ease: 'easeOut' }}
-              className="group relative rounded-[25px] p-5 overflow-hidden"
+              className="group relative overflow-hidden rounded-[25px] p-5 transition-transform duration-300 hover:-translate-y-0.5"
               style={{
                 background: 'linear-gradient(135deg, #FBEC89 0%, #FDF8E0 35%, #ffffff 72%, #FEFDF8 100%)',
                 border: '1px solid rgba(251, 236, 137, 0.44)',
-                boxShadow: '0 10px 28px rgba(15, 23, 42, 0.08), 0 2px 10px rgba(251, 236, 137, 0.12)',
+                boxShadow: '0 14px 32px rgba(15, 23, 42, 0.10), 0 4px 14px rgba(30, 77, 61, 0.10)',
               }}
             >
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-[62%] overflow-hidden" aria-hidden>
+                <Image
+                  src={service.image}
+                  alt=""
+                  fill
+                  className="scale-110 object-cover object-center opacity-[0.30] blur-[1.5px] saturate-[0.9]"
+                  sizes="280px"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-white/15 via-white/55 to-[#FEFDF8]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/18 via-transparent to-white/38" />
+              </div>
               <div className="absolute inset-x-0 top-0 h-20 opacity-65 pointer-events-none bg-gradient-to-b from-white/85 to-transparent" />
-              <div className="absolute right-4 top-4 text-[10px] font-bold tracking-[0.22em] text-slate-400">
+              <div className="absolute right-4 top-4 rounded-full border border-[#1E4D3D]/10 bg-white/80 px-2 py-1 text-[9px] font-black tracking-[0.18em] text-[#1E4D3D] shadow-sm">
                   {String(index + 1).padStart(2, '0')}
               </div>
 

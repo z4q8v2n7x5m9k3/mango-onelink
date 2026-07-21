@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Phone, Download, MapPin, ShoppingCart, Star, X, BookOpenText, ShoppingBag } from 'lucide-react'
+import { Phone, Download, MapPin, ShoppingCart, Star, X, ShoppingBag } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -10,6 +10,7 @@ import { shopConfig, ContactPerson } from '../config'
 import { getTelLink, getWhatsAppLink, formatPhoneDisplay } from '../../../lib/phone'
 import { generateVCard, downloadVCard } from '../../../lib/vcard'
 import { useLanguage } from '../../../contexts/LanguageContext'
+import OrderTypeSheet from '../../../components/OrderTypeSheet'
 
 interface ActionsRowProps {
   onOpenPayments?: () => void
@@ -25,6 +26,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
   const [callSelectorOpen, setCallSelectorOpen] = useState(false)
   const [whatsappSelectorOpen, setWhatsappSelectorOpen] = useState(false)
   const [instagramSelectorOpen, setInstagramSelectorOpen] = useState(false)
+  const [orderTypeSelectorOpen, setOrderTypeSelectorOpen] = useState(false)
   const callSelectorRef = useRef<HTMLDivElement>(null)
   const whatsappSelectorRef = useRef<HTMLDivElement>(null)
   const instagramSelectorRef = useRef<HTMLDivElement>(null)
@@ -184,9 +186,12 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
 
         {/* Row 2: Dine/Pickup + View Menu */}
         <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          <Link
-            href="/order"
-            onClick={(e) => e.stopPropagation()}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              setOrderTypeSelectorOpen(true)
+            }}
             className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
             style={{
               color: '#0F172A',
@@ -209,7 +214,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           >
             <ShoppingBag className="w-4 h-4 shrink-0 text-teal-700" strokeWidth={2.35} aria-hidden />
             <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Dine/Pickup</span>
-          </Link>
+          </button>
           <Link
             href="/menu"
             onClick={(e) => e.stopPropagation()}
@@ -231,7 +236,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
               e.currentTarget.style.transform = 'translateY(-1px)'
             }}
           >
-            <BookOpenText className="w-4 h-4 shrink-0 text-slate-700" strokeWidth={2.35} aria-hidden />
+            <Image src="/menu-icon.png" alt="" aria-hidden width={20} height={20} className="h-5 w-5 shrink-0 object-contain" />
             <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>View Menu</span>
           </Link>
         </div>
@@ -673,6 +678,12 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           )}
         </AnimatePresence>
       </div>
+
+      <OrderTypeSheet
+        open={orderTypeSelectorOpen}
+        onClose={() => setOrderTypeSelectorOpen(false)}
+        options={['dine-in', 'takeaway']}
+      />
     </>
   )
 })

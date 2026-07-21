@@ -9,6 +9,7 @@ import { ArrowLeft, Moon, Sun, ChevronsLeftRight, ShoppingCart, Plus, Minus, Che
 import { menuCategories, type CartItem, type MenuItem } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
+import OrderTypeSheet from '../components/OrderTypeSheet'
 import {
   MANGO_CART_KEY,
   MANGO_HANDOFF_TO_MENU,
@@ -69,9 +70,11 @@ function MenuPageInner() {
   const [lastAddedItemId, setLastAddedItemId] = useState<string | null>(null)
   const [cartBarPulse, setCartBarPulse] = useState(false)
   const [showCategoryMenu, setShowCategoryMenu] = useState(false)
+  const [showOrderTypeMenu, setShowOrderTypeMenu] = useState(false)
   const [expandedOrderCategory, setExpandedOrderCategory] = useState<MenuCategoryKey | null>(initialCat)
   const [activeFilter, setActiveFilter] = useState<'all' | 'under150' | 'under300' | 'quickBites' | 'meals' | 'drinks' | 'desserts' | 'combos'>('all')
   const categoryRefs = useRef<Partial<Record<MenuCategoryKey, HTMLButtonElement | null>>>({})
+  const categoryScrollerRef = useRef<HTMLDivElement | null>(null)
   const orderSectionRefs = useRef<Partial<Record<MenuCategoryKey, HTMLElement | null>>>({})
   /** Accordion header row — scroll target so the category title bar lands under the header, not the section bottom. */
   const orderHeaderRefs = useRef<Partial<Record<MenuCategoryKey, HTMLButtonElement | null>>>({})
@@ -124,15 +127,19 @@ function MenuPageInner() {
   }, [isOrderMode])
 
   useEffect(() => {
-    if (!isOrderMode) return
     const el = categoryRefs.current[activeCategory]
+    const scroller = categoryScrollerRef.current
     if (!el) return
     if (skipInitialOrderCategoryPillScroll.current) {
       skipInitialOrderCategoryPillScroll.current = false
       return
     }
-    el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
-  }, [activeCategory, isOrderMode])
+    if (scroller) {
+      scroller.scrollTo({ left: Math.max(0, el.offsetLeft - 12), behavior: 'smooth' })
+      return
+    }
+    el.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' })
+  }, [activeCategory])
 
   // Hint: show when user lands on menu page → auto-remove after 1 sec (or on scroll); next visit = show again
   useEffect(() => {
@@ -380,12 +387,19 @@ function MenuPageInner() {
 
               <div className="mt-4">
                 {isOrderMode && (
-                  <Link
-                    href="/order"
-                    className="mb-3 inline-flex rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-semibold leading-none text-slate-700 shadow-sm active:scale-[0.98]"
+                  <button
+                    type="button"
+                    onClick={() => setShowOrderTypeMenu(true)}
+                    className="mb-3 flex w-full items-center justify-between rounded-2xl border border-[#E9DDAF] bg-white px-3.5 py-3 text-left shadow-[0_10px_22px_rgba(30,77,61,0.08)] transition-all hover:border-[#1E4D3D]/35 active:scale-[0.99]"
                   >
-                    Change Order Type
-                  </Link>
+                    <span>
+                      <span className="block text-[11px] font-extrabold uppercase tracking-wide text-[#1E4D3D]">Change Order Type</span>
+                      <span className="mt-0.5 block text-sm font-bold text-slate-900">
+                        {orderType === 'dine-in' ? 'Dine In' : orderType === 'takeaway' ? 'Takeaway' : 'Order Online'}
+                      </span>
+                    </span>
+                    <ChevronDown className="h-5 w-5 text-slate-500" />
+                  </button>
                 )}
                 <AnimatePresence>
                   {!isOrderMode && showSlideHint && (
@@ -418,7 +432,7 @@ function MenuPageInner() {
                   </p>
                 )}
                 {!isOrderMode && (
-                <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5">
+                <div ref={categoryScrollerRef} className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5 scroll-px-3">
                   {categoryKeys.map((key) => {
                     const cat = menuCategories[key]
                     const isActive = activeCategory === key
@@ -481,7 +495,7 @@ function MenuPageInner() {
                     <p className="mb-2.5 mt-4 px-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600">
                       Browse Categories
                     </p>
-                    <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5">
+                    <div ref={categoryScrollerRef} className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5 scroll-px-3">
                       {categoryKeys.map((key) => {
                         const cat = menuCategories[key]
                         const isActive = activeCategory === key
@@ -778,8 +792,14 @@ function MenuPageInner() {
         </div>
       </main>
 
+      <OrderTypeSheet
+        open={isOrderMode && showOrderTypeMenu}
+        onClose={() => setShowOrderTypeMenu(false)}
+        currentType={orderType}
+      />
+
       <AnimatePresence>
-        {isOrderMode && showCategoryMenu && (
+        {showCategoryMenu && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -838,10 +858,9 @@ function MenuPageInner() {
         )}
       </AnimatePresence>
 
-      {isOrderMode && (
-        <>
+      <>
           <AnimatePresence>
-            {cart.length > 0 && (
+            {isOrderMode && cart.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -881,7 +900,7 @@ function MenuPageInner() {
             {!showCategoryMenu && (
               <div
                 className={`pointer-events-none fixed inset-x-0 z-[10000] mx-auto flex w-full max-w-[430px] justify-end ${
-                  cart.length > 0
+                  isOrderMode && cart.length > 0
                     ? 'bottom-[calc(5.25rem+env(safe-area-inset-bottom))]'
                     : 'bottom-[max(0.75rem,env(safe-area-inset-bottom))]'
                 }`}
@@ -908,8 +927,7 @@ function MenuPageInner() {
               </div>
             )}
           </AnimatePresence>
-        </>
-      )}
+      </>
     </div>
   )
 }

@@ -8,11 +8,13 @@ import { type CartItem, generateWhatsAppCartMessage } from '../shops/honeys-fres
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
 import { distanceKm } from '../lib/distance'
+import OrderTypeSheet from '../components/OrderTypeSheet'
 import {
   MANGO_CART_KEY,
   MANGO_HANDOFF_TO_CHECKOUT,
   MANGO_CHECKOUT_SESSION,
   readOrderType,
+  writeOrderType,
   clearCheckoutSession,
   writeHandoffToMenuFromCheckout,
   type MangoOrderType,
@@ -58,6 +60,7 @@ export default function CheckoutPage() {
   const [isLocating, setIsLocating] = useState(false)
   const [locationStatus, setLocationStatus] = useState('')
   const [toast, setToast] = useState<string | null>(null)
+  const [showOrderTypeMenu, setShowOrderTypeMenu] = useState(false)
 
   const locationBlockRef = useRef<HTMLDivElement>(null)
   const addressRef = useRef<HTMLTextAreaElement>(null)
@@ -378,6 +381,13 @@ Please confirm my order.`
     el.scrollIntoView({ block: 'center', behavior: 'smooth' })
   }
 
+  const changeOrderType = (nextOrderType: MangoOrderType) => {
+    setOrderType(nextOrderType)
+    writeOrderType(nextOrderType)
+    setShowOrderTypeMenu(false)
+    setToast(null)
+  }
+
   const couponSection = (
     <section className="mt-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-[0_8px_18px_rgba(15,23,42,0.05)]">
       <div className="flex items-center justify-between gap-2">
@@ -470,7 +480,7 @@ Please confirm my order.`
             'linear-gradient(to bottom, #fff8f9 0%, #fef5f7 58%, rgba(255, 248, 249, 0) 100%)',
         }}
       >
-        <div className="mx-auto w-full max-w-md px-3 pt-3">
+        <div className="mx-auto min-w-0 w-full max-w-md px-3 pt-3">
           <div className="rounded-3xl border border-slate-200/90 bg-white p-4 shadow-[0_14px_32px_rgba(15,23,42,0.08)]">
             <Link
               href={menuOrderHref}
@@ -538,10 +548,15 @@ Please confirm my order.`
           </section>
 
           {isOnlineOrder ? (
-          <section className="mt-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
+          <section className="mt-3 min-w-0 max-w-full overflow-hidden rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-[15px] font-bold text-slate-900">Delivery</h2>
-              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">Within {radiusKm} km</span>
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">Within {radiusKm} km</span>
+                <button type="button" onClick={() => setShowOrderTypeMenu(true)} className="text-[12px] font-semibold text-[#1E4D3D]">
+                  Change Order Type
+                </button>
+              </div>
             </div>
 
             <div ref={locationBlockRef} className="mt-2.5 rounded-2xl border border-slate-200 bg-slate-50/50 p-2.5">
@@ -655,18 +670,18 @@ Please confirm my order.`
             )}
           </section>
           ) : (
-          <section className="mt-3 rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
+          <section className="mt-3 min-w-0 max-w-full overflow-hidden rounded-3xl border border-slate-200 bg-white p-4 shadow-[0_12px_24px_rgba(15,23,42,0.06)]">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <h2 className="text-[15px] font-bold text-slate-900">
                 {isDineInOrder ? 'Dine In Details' : 'Takeaway Details'}
               </h2>
-              <Link href="/order" className="text-[12px] font-semibold text-[#E23744]">
+              <button type="button" onClick={() => setShowOrderTypeMenu(true)} className="text-[12px] font-semibold text-[#1E4D3D]">
                 Change Order Type
-              </Link>
+              </button>
             </div>
 
-            <div className="mt-3 grid gap-3">
-              <div>
+            <div className="mt-3 grid min-w-0 max-w-full gap-3">
+              <div className="min-w-0 max-w-full">
                 <label htmlFor="customer-name" className="mb-1 block text-[12px] font-semibold text-slate-800">
                   Name
                 </label>
@@ -680,7 +695,7 @@ Please confirm my order.`
                 />
               </div>
 
-              <div ref={mobileBlockRef}>
+              <div ref={mobileBlockRef} className="min-w-0 max-w-full">
                 <label htmlFor="checkout-mobile" className="mb-1 block text-[12px] font-semibold text-slate-800">
                   Phone
                 </label>
@@ -791,6 +806,13 @@ Please confirm my order.`
           {couponSection}
         </div>
       </main>
+
+      <OrderTypeSheet
+        open={showOrderTypeMenu}
+        onClose={() => setShowOrderTypeMenu(false)}
+        currentType={orderType}
+        onSelect={changeOrderType}
+      />
 
       <div
         className="pointer-events-none fixed inset-x-0 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[9999] flex justify-center"
