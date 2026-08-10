@@ -13,31 +13,41 @@ import { getWhatsAppLink } from '../lib/phone'
 type MenuCategoryKey = keyof typeof menuCategories
 
 const categoryKeys: MenuCategoryKey[] = [
-  'burgerPizza',
-  'sandwichSalad',
+  'pizza',
+  'bestSellersCombos',
+  'burgers',
+  'sandwiches',
+  'healthySandwiches',
   'momos',
-  'pastaMaggiFries',
-  'healthyDrinks',
+  'mojitos',
+  'healthyRefreshers',
+  'pasta',
+  'maggi',
+  'fries',
+  'smoothies',
+  'shakes',
   'wraps',
-  'mojitosSmoothies',
-  'shakesIceCream',
-  'starters',
-  'hotBeverages',
-  'riceNoodlesSoups',
-  'combos',
+  'springRolls',
+  'appetizers',
+  'soups',
+  'gravy',
   'mainCourse',
+  'indianCombos',
+  'riceNoodles',
   'thali',
+  'hotBeverages',
+  'iceCream',
 ]
 
 // PDF menu in public – opens in phone preview / browser
-const MENU_PDF_URL = '/mango%20menu%2017-01-2025.pdf'
+const MENU_PDF_URL = '/mango%20menu%2018-04-2026.pdf'
 
 const defaultOrderMessage = "Hi Mango, I'd like to order from the menu. Please share today's availability and rates."
 
 function MenuPageInner() {
   const searchParams = useSearchParams()
   const catParam = searchParams.get('cat') as MenuCategoryKey | null
-  const initialCat = (catParam && categoryKeys.includes(catParam)) ? catParam : 'burgerPizza'
+  const initialCat = (catParam && categoryKeys.includes(catParam)) ? catParam : 'pizza'
   const [activeCategory, setActiveCategory] = useState<MenuCategoryKey>(initialCat)
   const [isLightMode, setIsLightMode] = useState(true)
   const [showSlideHint, setShowSlideHint] = useState(false)
@@ -322,6 +332,11 @@ function MenuPageInner() {
                     >
                       {item.name}
                     </h3>
+                    {item.description && (
+                      <p className={`mt-1 line-clamp-2 text-[10px] leading-snug ${isLightMode ? 'text-slate-500' : 'text-white/45'}`}>
+                        {item.description}
+                      </p>
+                    )}
                     {item.quantity && item.quantity !== '1 portion' && (
                       <p
                         className={`text-[11px] mt-1.5 truncate shrink-0 ${

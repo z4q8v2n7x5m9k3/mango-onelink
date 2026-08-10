@@ -22,24 +22,34 @@ import {
 type MenuCategoryKey = keyof typeof menuCategories
 
 const categoryKeys: MenuCategoryKey[] = [
-  'burgerPizza',
-  'sandwichSalad',
+  'pizza',
+  'bestSellersCombos',
+  'burgers',
+  'sandwiches',
+  'healthySandwiches',
   'momos',
-  'pastaMaggiFries',
-  'healthyDrinks',
+  'mojitos',
+  'healthyRefreshers',
+  'pasta',
+  'maggi',
+  'fries',
+  'smoothies',
+  'shakes',
   'wraps',
-  'mojitosSmoothies',
-  'shakesIceCream',
-  'starters',
-  'hotBeverages',
-  'riceNoodlesSoups',
-  'combos',
+  'springRolls',
+  'appetizers',
+  'soups',
+  'gravy',
   'mainCourse',
+  'indianCombos',
+  'riceNoodles',
   'thali',
+  'hotBeverages',
+  'iceCream',
 ]
 
 // PDF menu in public – opens in phone preview / browser
-const MENU_PDF_URL = '/mango%20menu%2017-01-2025.pdf'
+const MENU_PDF_URL = '/mango%20menu%2018-04-2026.pdf'
 const defaultOrderMessage = "Hi Mango, I'd like to order from the menu. Please share today's availability and rates."
 
 /** Document scroll — same pattern as /reviews (no nested 100dvh scroller; avoids mobile “half cut” viewport). */
@@ -62,7 +72,7 @@ function MenuPageInner() {
     typeParam === 'dine-in' || typeParam === 'takeaway' ? typeParam : 'online'
   const orderTitle =
     orderType === 'dine-in' ? 'Dine In Order' : orderType === 'takeaway' ? 'Takeaway Order' : 'Order Online'
-  const initialCat = (catParam && categoryKeys.includes(catParam)) ? catParam : 'burgerPizza'
+  const initialCat = (catParam && categoryKeys.includes(catParam)) ? catParam : 'pizza'
   const [activeCategory, setActiveCategory] = useState<MenuCategoryKey>(initialCat)
   const [isLightMode, setIsLightMode] = useState(true)
   const [showSlideHint, setShowSlideHint] = useState(false)
@@ -205,11 +215,11 @@ function MenuPageInner() {
           if (activeFilter === 'all') return true
           if (activeFilter === 'under150') return price > 0 && price <= 150
           if (activeFilter === 'under300') return price > 0 && price <= 300
-          if (activeFilter === 'quickBites') return ['burgerPizza', 'sandwichSalad', 'momos', 'pastaMaggiFries', 'wraps', 'starters'].includes(key)
-          if (activeFilter === 'meals') return ['mainCourse', 'riceNoodlesSoups', 'thali'].includes(key)
-          if (activeFilter === 'drinks') return ['healthyDrinks', 'mojitosSmoothies', 'shakesIceCream', 'hotBeverages'].includes(key)
-          if (activeFilter === 'desserts') return ['shakesIceCream'].includes(key)
-          if (activeFilter === 'combos') return ['combos'].includes(key)
+          if (activeFilter === 'quickBites') return ['pizza', 'burgers', 'sandwiches', 'healthySandwiches', 'momos', 'pasta', 'maggi', 'fries', 'wraps', 'springRolls', 'appetizers'].includes(key)
+          if (activeFilter === 'meals') return ['gravy', 'mainCourse', 'indianCombos', 'riceNoodles', 'thali'].includes(key)
+          if (activeFilter === 'drinks') return ['mojitos', 'healthyRefreshers', 'smoothies', 'shakes', 'hotBeverages'].includes(key)
+          if (activeFilter === 'desserts') return ['iceCream'].includes(key)
+          if (activeFilter === 'combos') return ['bestSellersCombos', 'indianCombos'].includes(key)
           return true
         })
         return { key, cat, items }
@@ -678,6 +688,9 @@ function MenuPageInner() {
                                       </span>
                                       <h3 className={`text-[15px] font-bold leading-tight mt-2 ${isLightMode ? 'text-slate-900' : 'text-white'}`}>{item.name}</h3>
                                       <p className={`text-sm font-semibold mt-1 ${isLightMode ? 'text-slate-700' : 'text-white/85'}`}>{item.price}</p>
+                                      {item.description && (
+                                        <p className={`text-xs mt-1 leading-snug ${isLightMode ? 'text-slate-500' : 'text-white/55'}`}>{item.description}</p>
+                                      )}
                                       {item.quantity && item.quantity !== '1 portion' && (
                                         <p className={`text-xs mt-1 ${isLightMode ? 'text-slate-500' : 'text-white/55'}`}>{item.quantity}</p>
                                       )}
@@ -779,6 +792,9 @@ function MenuPageInner() {
                         >
                           {item.name}
                         </h3>
+                        {item.description && (
+                          <p className={`mt-1 line-clamp-2 text-[10px] leading-snug ${isLightMode ? 'text-slate-500' : 'text-white/50'}`}>{item.description}</p>
+                        )}
                         {item.quantity && item.quantity !== '1 portion' && (
                           <p className={`text-[11px] mt-1.5 truncate shrink-0 font-medium ${isLightMode ? 'text-slate-600' : 'text-white/55'}`}>{item.quantity}</p>
                         )}

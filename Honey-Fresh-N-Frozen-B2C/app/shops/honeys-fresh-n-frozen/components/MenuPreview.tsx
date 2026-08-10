@@ -7,26 +7,36 @@ import Image from 'next/image'
 import { menuCategories } from '../menu'
 
 const categoryOrder: (keyof typeof menuCategories)[] = [
-  'burgerPizza',
-  'sandwichSalad',
+  'pizza',
+  'bestSellersCombos',
+  'burgers',
+  'sandwiches',
+  'healthySandwiches',
   'momos',
-  'pastaMaggiFries',
-  'healthyDrinks',
+  'mojitos',
+  'healthyRefreshers',
+  'pasta',
+  'maggi',
+  'fries',
+  'smoothies',
+  'shakes',
   'wraps',
-  'mojitosSmoothies',
-  'shakesIceCream',
-  'starters',
-  'hotBeverages',
-  'riceNoodlesSoups',
-  'combos',
+  'springRolls',
+  'appetizers',
+  'soups',
+  'gravy',
   'mainCourse',
+  'indianCombos',
+  'riceNoodles',
   'thali',
+  'hotBeverages',
+  'iceCream',
 ]
 
-// Show only 4 categories on home section (Burger & Pizza, Sandwich, Momos, Wraps)
+// Show four popular categories on the home section.
 const previewCategories: (keyof typeof menuCategories)[] = [
-  'burgerPizza',
-  'sandwichSalad',
+  'pizza',
+  'burgers',
   'momos',
   'wraps',
 ]

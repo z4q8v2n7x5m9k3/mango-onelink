@@ -1,4 +1,4 @@
-// Mango – Pure Vegetarian Restaurant – Menu as per 17-01-2025
+// Mango by Shree Ji Foods - menu updated from the 18-04-2026 printed menu.
 
 export interface MenuItem {
   id: string
@@ -11,20 +11,30 @@ export interface MenuItem {
 }
 
 export type MenuCategoryKey =
-  | 'burgerPizza'
-  | 'sandwichSalad'
+  | 'pizza'
+  | 'bestSellersCombos'
+  | 'burgers'
+  | 'sandwiches'
+  | 'healthySandwiches'
   | 'momos'
-  | 'pastaMaggiFries'
-  | 'healthyDrinks'
+  | 'mojitos'
+  | 'healthyRefreshers'
+  | 'pasta'
+  | 'maggi'
+  | 'fries'
+  | 'smoothies'
+  | 'shakes'
   | 'wraps'
-  | 'mojitosSmoothies'
-  | 'shakesIceCream'
-  | 'starters'
-  | 'hotBeverages'
-  | 'riceNoodlesSoups'
-  | 'combos'
+  | 'springRolls'
+  | 'appetizers'
+  | 'soups'
+  | 'gravy'
   | 'mainCourse'
+  | 'indianCombos'
+  | 'riceNoodles'
   | 'thali'
+  | 'hotBeverages'
+  | 'iceCream'
 
 function getItemImage(category: string, itemName: string): string {
   const imageName = itemName
@@ -61,347 +71,219 @@ export interface MenuCategoryConfig {
   items: MenuItem[]
 }
 
-// Category images (Unsplash – veg/food themed)
-const categoryImages: Record<MenuCategoryKey, string> = {
-  burgerPizza: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop',
-  sandwichSalad: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&h=300&fit=crop',
-  momos: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=400&h=300&fit=crop',
-  pastaMaggiFries: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop',
-  healthyDrinks: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop',
-  wraps: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=300&fit=crop',
-  mojitosSmoothies: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
-  shakesIceCream: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=300&fit=crop',
-  starters: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop',
-  hotBeverages: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=400&h=300&fit=crop',
-  riceNoodlesSoups: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&h=300&fit=crop',
+const images = {
+  pizza: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop',
   combos: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop',
-  mainCourse: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop',
+  burgers: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop',
+  sandwiches: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&h=300&fit=crop',
+  momos: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=400&h=300&fit=crop',
+  drinks: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
+  pasta: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop',
+  fries: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&h=300&fit=crop',
+  smoothies: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop',
+  wraps: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=300&fit=crop',
+  starters: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop',
+  soups: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=300&fit=crop',
+  main: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop',
+  rice: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&h=300&fit=crop',
   thali: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400&h=300&fit=crop',
+  tea: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=400&h=300&fit=crop',
+  dessert: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=300&fit=crop',
 }
 
 export const menuCategories: Record<MenuCategoryKey, MenuCategoryConfig> = {
-  burgerPizza: {
-    name: 'Burger & Pizza',
-    shortDescription: 'Burgers, fries and pizza.',
-    icon: '🍔',
-    image: categoryImages.burgerPizza,
+  pizza: {
+    name: 'Fresh Dough Pizza', shortDescription: 'Small, medium and large fresh dough pizzas.', icon: '🍕', image: images.pizza,
     items: [
-      item('bp-1', 'Veg. Burger', '110', 'burgerPizza'),
-      item('bp-2', 'Veg. Burger + Fries', '130', 'burgerPizza'),
-      item('bp-3', 'Cheese Stuffing Burger + Fries', '190', 'burgerPizza'),
-      item('bp-4', 'Coleslaw Burger + Fries', '190', 'burgerPizza'),
-      item('bp-5', 'Crispy Paneer Burger + Fries', '250', 'burgerPizza'),
-      item('bp-6', 'Mango Special Burger + Fries', '250', 'burgerPizza'),
-      item('bp-7', 'Double Decker Burger + Fries', '250', 'burgerPizza'),
-      item('bp-8', 'Double Cheese Burger + Fries', '250', 'burgerPizza'),
-      item('bp-9', 'Multigrain Burger + Fries', '250', 'burgerPizza'),
-      item('bp-10', 'Veg Corn Pizza Small', '70', 'burgerPizza'),
-      item('bp-11', 'Crispy Paneer Pizza Small', '90', 'burgerPizza'),
-      item('bp-12', 'Plain Cheese Pizza', '120', 'burgerPizza'),
-      item('bp-13', 'Capsicum Onion Pizza', '130', 'burgerPizza'),
-      item('bp-14', 'Mexican Pizza', '130', 'burgerPizza'),
-      item('bp-15', 'Mushroom Capsicum Onion Pizza', '130', 'burgerPizza'),
-      item('bp-16', 'Barbeque Mushroom Pizza', '140', 'burgerPizza'),
-      item('bp-17', 'Mango Special Pizza', '140', 'burgerPizza'),
-      item('bp-18', 'Thai Pizza', '140', 'burgerPizza'),
-      item('bp-19', 'Italian Pizza', '140', 'burgerPizza'),
-      item('bp-20', 'Veg Schezwan Pizza', '250', 'burgerPizza'),
-      item('bp-21', 'Paneer Makhni Pizza', '250', 'burgerPizza'),
-      item('bp-22', 'Exotic Vegetable Pizza', '250', 'burgerPizza'),
-      item('bp-23', 'Pineapple Corn Pizza', '250', 'burgerPizza'),
-      item('bp-24', 'Devil Baby Corn Pizza', '250', 'burgerPizza'),
-      item('bp-25', 'Paneer Manchurian Pizza', '250', 'burgerPizza'),
-      item('bp-26', 'Paneer Makhani Pizza', '250', 'burgerPizza'),
-      item('bp-27', 'Paneer Tikka Pizza', '250', 'burgerPizza'),
-      item('bp-28', 'Special Corn Pizza', '250', 'burgerPizza'),
+      item('pz-small', 'Small Pizza (Any 6 inch)', '140', 'pizza', '6 inch'),
+      item('pz-cheese-m', 'Plain Cheese Pizza', '220', 'pizza', 'Medium'),
+      item('pz-cheese-l', 'Plain Cheese Pizza', '310', 'pizza', 'Large'),
+      ...[
+        ['capsicum-onion', 'Capsicum Onion Pizza'], ['mexican', 'Mexican Pizza'],
+        ['mushroom-capsicum-onion', 'Mushroom Capsicum Onion Pizza'], ['barbeque-mushroom', 'Barbeque Mushroom Pizza'],
+        ['mango-special', 'Mango Special Pizza'], ['italian', 'Italian Pizza'],
+        ['veg-schezwan', 'Veg Schezwan Pizza'], ['paneer-makhni', 'Paneer Makhni Pizza'],
+        ['exotic-vegetable', 'Exotic Vegetable Pizza'], ['pineapple-corn', 'Pineapple Corn Pizza'],
+        ['paneer-manchurian', 'Paneer Manchurian Pizza'], ['paneer-makhani', 'Paneer Makhani Pizza'],
+        ['paneer-tikka', 'Paneer Tikka Pizza'], ['special-corn', 'Special Corn Pizza'],
+      ].flatMap(([slug, name]) => [
+        item(`pz-${slug}-m`, name, '260', 'pizza', 'Medium'),
+        item(`pz-${slug}-l`, name, '380', 'pizza', 'Large'),
+      ]),
     ],
   },
-  sandwichSalad: {
-    name: 'Sandwich & Salad',
-    shortDescription: 'Salads & sandwiches.',
-    icon: '🥪',
-    image: categoryImages.sandwichSalad,
+  bestSellersCombos: {
+    name: "Best Sellers Combo's", shortDescription: 'Popular value combos from the printed menu.', icon: '⭐', image: images.combos,
     items: [
-      item('ss-1', 'Protein Rich Salad (Broccoli, Iceberg, Corn, Mushroom)', '150', 'sandwichSalad'),
-      item('ss-2', 'Protein Rich Salad (Corn, Tomato, Onion, Cucumber, Carrot With Paneer)', '150', 'sandwichSalad'),
-      item('ss-3', 'Multigrain Bread Sandwich', '100', 'sandwichSalad'),
-      item('ss-4', 'Peanut Butter Sandwich', '100', 'sandwichSalad'),
-      item('ss-5', 'Brown Bread Sandwich (Customise your Sandwich)', '100', 'sandwichSalad'),
-      item('ss-6', 'Multigrain Sub', '150', 'sandwichSalad'),
-      item('ss-7', 'Multigrain Sub with Paneer / Soya', '150', 'sandwichSalad'),
-      item('ss-8', 'Corn Veg Grilled Sandwich', '59', 'sandwichSalad'),
-      item('ss-9', 'Coleslaw Sandwich', '69', 'sandwichSalad'),
-      item('ss-10', 'Grilled Sandwich Thai', '69', 'sandwichSalad'),
-      item('ss-11', 'Italian Sandwich Grilled', '69', 'sandwichSalad'),
-      item('ss-12', 'Cheese Toast', '99', 'sandwichSalad'),
-      item('ss-13', 'Garlic Bread', '99', 'sandwichSalad'),
-      item('ss-14', 'Paneer Manchurian Sandwich', '99', 'sandwichSalad'),
-      item('ss-15', 'Zingy Zesty Moroccan Grilled (Paneer/Corn/Mushroom)', '110', 'sandwichSalad'),
-      item('ss-16', 'Club Sandwich', '110', 'sandwichSalad'),
-      item('ss-17', 'Special Tikki Sandwich', '110', 'sandwichSalad'),
-      item('ss-18', 'Grilled Paneer Makhani Sandwich', '99', 'sandwichSalad'),
-      item('ss-19', 'Paneer Tikka Grilled Sandwich', '99', 'sandwichSalad'),
-      item('ss-20', 'French Cheese Sandwich', '100', 'sandwichSalad'),
+      item('bc-1', 'Multigrain Bread Grilled Sandwich + Lemon Mojito', '199', 'bestSellersCombos', '1 combo', 'Broccoli, mushroom and corn'),
+      item('bc-2', 'Chef Special Pizza + Cold Drink', '299', 'bestSellersCombos', '1 combo', 'Baby corn / paneer / broccoli / mushroom'),
+      item('bc-3', 'Crispy Paneer Burger + Fries + Cold Drink', '160', 'bestSellersCombos', '1 combo'),
+      item('bc-4', 'Pasta with Garlic Bread (Red / White / Mixed)', '210', 'bestSellersCombos', '1 combo'),
+      item('bc-5', 'Afghani Momos Pure Paneer (8 pcs) + Cold Drink', '230', 'bestSellersCombos', '1 combo'),
+      item('bc-6', 'Veg Steam Momos + Cold Drink', '150', 'bestSellersCombos', '1 combo'),
+      item('bc-7', 'Loaded Fries + Cold Drink', '180', 'bestSellersCombos', '1 combo'),
+      item('bc-8', 'Honey Chilli Potato + Cold Drink', '190', 'bestSellersCombos', '1 combo'),
+      item('bc-9', 'Veg Fried Rice / Noodles with Veg Manchurian', '329', 'bestSellersCombos', '1 combo'),
+      item('bc-10', 'Chilli Paneer with Noodles / Fried Rice', '329', 'bestSellersCombos', '1 combo'),
+    ],
+  },
+  burgers: {
+    name: 'Burgers', shortDescription: 'Classic, paneer and special burgers.', icon: '🍔', image: images.burgers,
+    items: [
+      item('bg-1', 'Classic Veg Burger', '89', 'burgers'), item('bg-2', 'Veg Burger with Fries', '109', 'burgers'),
+      item('bg-3', 'Crispy Paneer Burger with Fries', '119', 'burgers'), item('bg-4', 'Multigrain Burger with Fries', '109', 'burgers'),
+      item('bg-5', 'Double Decker Burger with Fries', '119', 'burgers'),
+      item('bg-6', 'Maharaja Tandoori Paneer + Special Tikki Burger', '129', 'burgers'),
+      item('bg-7', 'Mango Special Burger Combo', '149', 'burgers', 'Burger + Coke + Fries'),
+    ],
+  },
+  sandwiches: {
+    name: 'Sandwiches', shortDescription: 'Grilled, cold and paneer sandwiches.', icon: '🥪', image: images.sandwiches,
+    items: [
+      item('sw-1', 'Mushroom & Cheese Sandwich', '109', 'sandwiches'), item('sw-2', 'Club Sandwich (Cold Sandwich)', '109', 'sandwiches'),
+      item('sw-3', 'Paneer Manchurian Sandwich', '99', 'sandwiches'), item('sw-4', 'Paneer Tikka Sandwich', '99', 'sandwiches'),
+      item('sw-5', 'Special Tikki Sandwich', '99', 'sandwiches'), item('sw-6', 'Veg Corn Grilled Sandwich', '79', 'sandwiches'),
+      item('sw-7', 'Italian Grilled Sandwich', '79', 'sandwiches'),
+    ],
+  },
+  healthySandwiches: {
+    name: 'Healthy Sandwiches', shortDescription: 'Multigrain and brown bread choices.', icon: '🌾', image: images.sandwiches,
+    items: [
+      item('hs-1', 'Multigrain Bread Sandwich', '109', 'healthySandwiches', '1 portion', 'Broccoli, mushroom, tomato, iceberg, corn & more'),
+      item('hs-2', 'Peanut Butter Sandwich', '119', 'healthySandwiches', '1 portion', 'Broccoli, mushroom, iceberg, corn & more'),
+      item('hs-3', 'Brown Bread Sandwich', '99', 'healthySandwiches', 'Customise your sandwich'),
+      item('hs-4', 'Multigrain Sub', '169', 'healthySandwiches'), item('hs-5', 'Multigrain Sub with Paneer / Soya', '179', 'healthySandwiches'),
+      item('hs-extra-cheese', 'Extra Cheese Slice', '30', 'healthySandwiches', 'Add-on'),
     ],
   },
   momos: {
-    name: 'Momos',
-    shortDescription: 'Steam, fried or pan fried. Half/Full portions.',
-    icon: '🥟',
-    image: categoryImages.momos,
+    name: 'Momos', shortDescription: 'Steam, fried, pan fried, kurkure, platter and Afghani momos.', icon: '🥟', image: images.momos,
     items: [
-      item('mo-1', 'Veg Classic Momos (Steam)', '80/110', 'momos', 'Half/Full'),
-      item('mo-2', 'Chilli Paneer Momos (Steam)', '90/140', 'momos', 'Half/Full'),
-      item('mo-3', 'Pure Paneer Momos (Steam)', '100/150', 'momos', 'Half/Full'),
-      item('mo-4', 'Veg Classic Momos (Fried)', '80/120', 'momos', 'Half/Full'),
-      item('mo-5', 'Chilli Paneer Momos (Fried)', '100/140', 'momos', 'Half/Full'),
-      item('mo-6', 'Pure Paneer Momos (Fried)', '100/160', 'momos', 'Half/Full'),
-      item('mo-7', 'Veg Classic Momos (Pan Fried)', '80/140', 'momos', 'Half/Full'),
-      item('mo-8', 'Chilli Paneer Momos (Pan Fried)', '100/160', 'momos', 'Half/Full'),
-      item('mo-9', 'Pure Paneer Momos (Pan Fried)', '100/170', 'momos', 'Half/Full'),
-      item('mo-10', 'Kurkure Momos (Steam + Fried + Pan Fried)', '110/200', 'momos', 'Half/Full'),
-      item('mo-11', 'Afghani Momos (Steam + Fried + Pan Fried)', '110/200', 'momos', 'Half/Full'),
-      item('mo-12', 'Momo Platter (9 pcs)', '240', 'momos'),
+      ...[
+        ['veg-classic-steam', 'Veg Classic Momos - Steam', '80', '110'], ['chilli-paneer-steam', 'Chilli Paneer Momos - Steam', '90', '150'],
+        ['pure-paneer-steam', 'Pure Paneer Momos - Steam', '100', '160'], ['veg-classic-fried', 'Veg Classic Momos - Fried', '80', '120'],
+        ['chilli-paneer-fried', 'Chilli Paneer Momos - Fried', '100', '150'], ['pure-paneer-fried', 'Pure Paneer Momos - Fried', '100', '160'],
+        ['veg-classic-pan', 'Veg Classic Momos - Pan Fried', '80', '140'], ['chilli-paneer-pan', 'Chilli Paneer Momos - Pan Fried', '100', '160'],
+        ['pure-paneer-pan', 'Pure Paneer Momos - Pan Fried', '100', '170'], ['veg-classic-kurkure', 'Veg Classic Kurkure Momos', '110', '210'],
+        ['chilli-paneer-kurkure', 'Chilli Paneer Kurkure Momos', '110', '210'], ['pure-paneer-kurkure', 'Pure Paneer Kurkure Momos', '110', '210'],
+        ['veg-classic-afghani', 'Veg Classic Afghani Momos', '110', '210'], ['chilli-paneer-afghani', 'Chilli Paneer Afghani Momos', '110', '210'],
+        ['pure-paneer-afghani', 'Pure Paneer Afghani Momos', '110', '210'],
+      ].flatMap(([slug, name, half, full]) => [item(`mo-${slug}-h`, name, half, 'momos', 'Half'), item(`mo-${slug}-f`, name, full, 'momos', 'Full')]),
+      item('mo-platter-veg', 'Veg Classic Momo Platter', '240', 'momos', '9 pcs', 'Steam + fried + pan fried'),
+      item('mo-platter-chilli', 'Chilli Paneer Momo Platter', '250', 'momos', '9 pcs', 'Steam + fried + pan fried'),
+      item('mo-platter-paneer', 'Pure Paneer Momo Platter', '250', 'momos', '9 pcs', 'Steam + fried + pan fried'),
     ],
   },
-  pastaMaggiFries: {
-    name: 'Pasta, Maggi & Fries',
-    shortDescription: 'Pasta, Maggi and Belgium fries.',
-    icon: '🍝',
-    image: categoryImages.pastaMaggiFries,
-    items: [
-      item('pm-1', 'Pasta White/Red', '150', 'pastaMaggiFries'),
-      item('pm-2', 'Mixed Pasta', '150', 'pastaMaggiFries'),
-      item('pm-3', 'Baked Pasta', '200', 'pastaMaggiFries'),
-      item('pm-4', 'Pasta with Garlic Bread', '200', 'pastaMaggiFries'),
-      item('pm-5', 'Cheese Garlic Bread (3 pcs)', '110', 'pastaMaggiFries'),
-      item('pm-6', 'Vegetable Maggi', '60', 'pastaMaggiFries'),
-      item('pm-7', 'Schezwan Maggi', '60', 'pastaMaggiFries'),
-      item('pm-8', 'Paneer Maggi', '70', 'pastaMaggiFries'),
-      item('pm-9', 'Baked Maggi', '100', 'pastaMaggiFries'),
-      item('pm-10', 'Maggi Tadka', '80', 'pastaMaggiFries'),
-      item('pm-11', 'Corn & Paneer Maggi', '90', 'pastaMaggiFries'),
-      item('pm-12', 'Cheese Maggi', '90', 'pastaMaggiFries'),
-      item('pm-13', 'Finger Chips', '100', 'pastaMaggiFries'),
-      item('pm-14', 'Fries Peri Peri', '120', 'pastaMaggiFries'),
-      item('pm-15', 'Masala Fries with Cheese', '140', 'pastaMaggiFries'),
-      item('pm-16', 'Mexican Salsa Fries', '140', 'pastaMaggiFries'),
-      item('pm-17', 'Loaded Fries', '150', 'pastaMaggiFries'),
-    ],
+  mojitos: {
+    name: 'Mojitos', shortDescription: 'All mojitos and iced teas at ₹109.', icon: '🍹', image: images.drinks,
+    items: ['Lemon Ice Tea', 'Peach Ice Tea', 'Kiwi Mojito', 'Black Currant Mojito', 'Mix Berries Mojito', 'Strawberry Mojito', 'Blue Lagoon Mojito', 'Lemon Mojito', 'Green Apple Mojito', 'Litchi Mojito', 'Paan Mojito', 'Mulberry Mojito'].map((name, i) => item(`mj-${i + 1}`, name, '109', 'mojitos')),
   },
-  healthyDrinks: {
-    name: 'Healthy Drinks',
-    shortDescription: 'Nimbu pani, Rooh Afza, chia seeds and more.',
-    icon: '🥤',
-    image: categoryImages.healthyDrinks,
+  healthyRefreshers: {
+    name: 'Healthy Refreshers', shortDescription: 'Fresh lime and Rooh Afza refreshers.', icon: '🥤', image: images.drinks,
+    items: [item('hr-1', 'Fresh Lime Soda / Water', '89', 'healthyRefreshers'), item('hr-2', 'Rooh Afza with Fresh Lemon', '89', 'healthyRefreshers')],
+  },
+  pasta: {
+    name: 'Penne Pasta', shortDescription: 'Red, white, mixed and baked pasta.', icon: '🍝', image: images.pasta,
+    items: [item('pa-1', 'Pasta White / Red / Mixed', '169', 'pasta'), item('pa-2', 'Baked Pasta', '209', 'pasta'), item('pa-3', 'Pasta with Garlic Bread Combo', '209', 'pasta'), item('pa-4', 'Garlic Bread', '109', 'pasta', '3 pcs')],
+  },
+  maggi: {
+    name: 'Maggi', shortDescription: 'Vegetable, paneer, baked and cheese Maggi.', icon: '🍜', image: images.pasta,
+    items: [item('mg-1', 'Vegetable Maggi', '69', 'maggi'), item('mg-2', 'Schezwan Teekhi Maggi', '79', 'maggi'), item('mg-3', 'Paneer Maggi', '79', 'maggi'), item('mg-4', 'Baked Maggi', '99', 'maggi'), item('mg-5', 'Tadka Corn & Paneer Maggi', '99', 'maggi'), item('mg-6', 'Cheese Maggi', '79', 'maggi')],
+  },
+  fries: {
+    name: 'Belgium Fries', shortDescription: 'Classic, peri peri and loaded fries.', icon: '🍟', image: images.fries,
+    items: [item('fr-1', 'Finger Chips', '109', 'fries'), item('fr-2', 'Fries Peri Peri', '129', 'fries'), item('fr-3', 'Loaded Fries with Cheese', '149', 'fries')],
+  },
+  smoothies: {
+    name: 'Healthy Smoothies', shortDescription: 'Weight-loss smoothies; selected options served with honey.', icon: '🥛', image: images.smoothies,
+    items: [item('sm-1', 'Date Smoothie with Oats', '149', 'smoothies', '1 glass', 'Served with honey'), item('sm-2', 'Banana, Dates & Oats Smoothie', '149', 'smoothies', '1 glass', 'Served with honey'), item('sm-3', 'Date & Choco Smoothie with Almonds', '159', 'smoothies')],
+  },
+  shakes: {
+    name: 'Shakes', shortDescription: 'Fruit, coffee, cookie and ice-cream shakes.', icon: '🥤', image: images.smoothies,
     items: [
-      item('hd-1', 'Nimbu Pani', '80', 'healthyDrinks'),
-      item('hd-2', 'Fresh Lime Soda', '80', 'healthyDrinks'),
-      item('hd-3', 'Rooh Afza', '80', 'healthyDrinks'),
-      item('hd-4', 'Rooh Afza with Fresh Lemon', '90', 'healthyDrinks'),
-      item('hd-5', 'Chia Seeds Shakes', '100', 'healthyDrinks'),
-      item('hd-6', 'Fresh Lemon Water with Chia Seeds', '90', 'healthyDrinks'),
-      item('hd-7', 'Fresh Lemon Soda with Chia Seeds', '100', 'healthyDrinks'),
-      item('hd-8', 'Date Smoothie with Oats', '140', 'healthyDrinks'),
-      item('hd-9', 'Banana & Dates Smoothie', '140', 'healthyDrinks'),
-      item('hd-10', 'Banana & Oats with Honey', '140', 'healthyDrinks'),
-      item('hd-11', 'Date & Choco Smoothie', '140', 'healthyDrinks'),
-      item('hd-12', 'Healthy Chocolate Banana Smoothie', '140', 'healthyDrinks'),
-      item('hd-13', 'Peanut Butter Banana Smoothie (Almond Milk)', '140', 'healthyDrinks'),
+      item('sh-1', 'Mulberry / Mix Berries Shake', '119', 'shakes'), item('sh-2', 'Cold Coffee', '109', 'shakes'),
+      item('sh-3', 'Mango Shake', '109', 'shakes'), item('sh-4', 'Fresh Banana Shake', '109', 'shakes'), item('sh-5', 'Bubblegum Shake', '119', 'shakes'),
+      item('sh-6', 'Vanilla / Strawberry / Butterscotch Shake', '109', 'shakes'), item('sh-7', 'Chocolate Cookie Shake', '119', 'shakes'),
+      item('sh-8', 'Kit-Kat / Oreo / Kiwi Shake', '119', 'shakes'), item('sh-9', 'Cold Coffee with Ice Cream', '149', 'shakes'), item('sh-10', 'Choco Brownie Shake', '149', 'shakes'),
+      item('sh-a1', 'Extra Lemon', '20', 'shakes', 'Add-on'), item('sh-a2', 'Extra Corn', '20', 'shakes', 'Add-on'),
+      item('sh-a3', 'Extra Broccoli', '20', 'shakes', 'Add-on'), item('sh-a4', 'Extra Chia Seeds', '20', 'shakes', 'Add-on'),
+      item('sh-a5', 'Extra Cheese', '30', 'shakes', 'Add-on'), item('sh-a6', 'Extra Dip', '20', 'shakes', 'Add-on'),
+      item('sh-a7', 'Extra Mushroom', '20', 'shakes', 'Add-on'), item('sh-a8', 'Add Cold Drink', '39', 'shakes', 'Add-on'),
     ],
   },
   wraps: {
-    name: 'Wraps',
-    shortDescription: 'Masala chaap, mushroom, veg, corn and paneer wraps.',
-    icon: '🌯',
-    image: categoryImages.wraps,
+    name: 'Wraps', shortDescription: 'Chaap, mushroom, corn and paneer wraps.', icon: '🌯', image: images.wraps,
+    items: [item('wr-1', 'Masala Chaap Wrap', '130', 'wraps'), item('wr-2', 'Mushroom Wrap', '130', 'wraps'), item('wr-3', 'Veg Corn Wrap', '120', 'wraps'), item('wr-4', 'Paneer Tikka Wrap', '130', 'wraps'), item('wr-5', 'Paneer Manchurian Wrap', '130', 'wraps'), item('wr-6', 'Vegetable Cheese Wrap', '130', 'wraps')],
+  },
+  springRolls: {
+    name: 'Spring Rolls', shortDescription: 'Plain and kurkure spring rolls.', icon: '🥢', image: images.starters,
+    items: [item('sr-veg-p', 'Vegetables Spring Rolls', '149', 'springRolls', 'Plain'), item('sr-veg-k', 'Vegetables Spring Rolls', '159', 'springRolls', 'Kurkure'), item('sr-paneer-p', 'Paneer Corn Spring Rolls', '159', 'springRolls', 'Plain'), item('sr-paneer-k', 'Paneer Corn Spring Rolls', '169', 'springRolls', 'Kurkure')],
+  },
+  appetizers: {
+    name: 'Appetizers / Snacks', shortDescription: 'Chinese snacks, corn, paneer, soya and chaap.', icon: '🥡', image: images.starters,
     items: [
-      item('wr-1', 'Masala Chaap Wraps', '110', 'wraps'),
-      item('wr-2', 'Mushroom Wraps', '100', 'wraps'),
-      item('wr-3', 'Veg Wraps', '100', 'wraps'),
-      item('wr-4', 'Corn Wraps', '100', 'wraps'),
-      item('wr-5', 'Paneer Tikka Wraps', '120', 'wraps'),
-      item('wr-6', 'Paneer Manchurian Wrap', '130', 'wraps'),
-      item('wr-7', 'Vegetable Cheese Wrap', '130', 'wraps'),
-      item('wr-8', 'Zingy Zesty Moroccan Grilled Wrap (Paneer/Corn/Mushroom)', '130', 'wraps'),
+      item('ap-1', 'Masala Sweet Corn', '79', 'appetizers'), item('ap-2', 'Crispy Corn', '159', 'appetizers'),
+      ...[
+        ['veg-manchurian', 'Veg Manchurian Dry', '199', '229'], ['chilli-paneer', 'Chilli Paneer Dry', '199', '229'],
+        ['chilli-mushroom', 'Chilli Mushroom', '199', '229'], ['chilli-soya', 'Chilli Soya', '139', '199'],
+        ['kurkure-soya', 'Kurkure Soya Nuggets', '139', '199'], ['paneer-manchurian', 'Paneer Manchurian Dry', '199', '229'],
+      ].flatMap(([slug, name, half, full]) => [item(`ap-${slug}-h`, name, half, 'appetizers', 'Half'), item(`ap-${slug}-f`, name, full, 'appetizers', 'Full')]),
+      item('ap-3', 'Kurkure Paneer Fingers', '179', 'appetizers'), item('ap-4', 'Loaded Cheesy Nachos', '199', 'appetizers'),
+      item('ap-5', 'Honey Chilli Potato', '169', 'appetizers'), item('ap-6', 'Chilli Potato', '169', 'appetizers'), item('ap-7', 'Veg Masala Chaap', '139', 'appetizers'),
     ],
   },
-  mojitosSmoothies: {
-    name: 'Mojitos & Smoothies',
-    shortDescription: 'Mojitos and healthy smoothies.',
-    icon: '🍹',
-    image: categoryImages.mojitosSmoothies,
-    items: [
-      item('ms-1', 'Lemon Ice Tea', '100', 'mojitosSmoothies'),
-      item('ms-2', 'Peach Ice Tea', '100', 'mojitosSmoothies'),
-      item('ms-3', 'Kiwi Mojito', '100', 'mojitosSmoothies'),
-      item('ms-4', 'Black Currant Mojito', '100', 'mojitosSmoothies'),
-      item('ms-5', 'Mix Berries Mojito', '100', 'mojitosSmoothies'),
-      item('ms-6', 'Strawberry Mojito', '100', 'mojitosSmoothies'),
-      item('ms-7', 'Blue Cancans Mojito', '100', 'mojitosSmoothies'),
-      item('ms-8', 'Lemon Mojito', '100', 'mojitosSmoothies'),
-      item('ms-9', 'Green Apple Mojito', '100', 'mojitosSmoothies'),
-      item('ms-10', 'Litchi Mojito', '100', 'mojitosSmoothies'),
-      item('ms-11', 'Paan Mojito', '100', 'mojitosSmoothies'),
-      item('ms-12', 'Mulberry Mojito', '100', 'mojitosSmoothies'),
-    ],
+  soups: {
+    name: 'Soups', shortDescription: 'Vegetarian soups.', icon: '🥣', image: images.soups,
+    items: [item('sp-1', 'Veg Corn Soup', '109', 'soups'), item('sp-2', 'Manchow Soup', '109', 'soups'), item('sp-3', "Hot 'n' Sour Soup", '109', 'soups'), item('sp-4', 'Exotic Vegetables Healthy Soup', '109', 'soups'), item('sp-5', 'Lemon Coriander Soup', '109', 'soups')],
   },
-  shakesIceCream: {
-    name: 'Shakes & Ice Cream',
-    shortDescription: 'Shakes and ice cream.',
-    icon: '🍦',
-    image: categoryImages.shakesIceCream,
+  gravy: {
+    name: 'Gravy', shortDescription: 'Vegetable and paneer gravy dishes.', icon: '🥘', image: images.main,
     items: [
-      item('si-1', 'Mulberry Shake', '110', 'shakesIceCream'),
-      item('si-2', 'Cold Coffee', '110', 'shakesIceCream'),
-      item('si-3', 'Mango Shake', '110', 'shakesIceCream'),
-      item('si-4', 'Strawberry Shake', '110', 'shakesIceCream'),
-      item('si-5', 'Kiwi Shake', '110', 'shakesIceCream'),
-      item('si-6', 'Butter Scotch Shake', '110', 'shakesIceCream'),
-      item('si-7', 'Banana Shake', '110', 'shakesIceCream'),
-      item('si-8', 'Vanilla Shake', '110', 'shakesIceCream'),
-      item('si-9', 'Chocolate Cookie Shake', '110', 'shakesIceCream'),
-      item('si-10', 'Oreo Shake', '110', 'shakesIceCream'),
-      item('si-11', 'Bubblegum Shake', '110', 'shakesIceCream'),
-      item('si-12', 'Kit-Kat Shake', '110', 'shakesIceCream'),
-      item('si-13', 'Cold Coffee with Ice Cream', '110', 'shakesIceCream'),
-      item('si-14', 'Choco Brownie Shake', '120', 'shakesIceCream'),
-      item('si-15', 'Ice Cream (Real Strawberry/Pineapple/Mix Berries)', '90', 'shakesIceCream'),
-      item('si-16', 'Hot Chocolate', '130', 'shakesIceCream'),
-      item('si-17', 'Fruit Cocktail', '140', 'shakesIceCream'),
-      item('si-18', 'Choco Brownie with Ice Cream', '120', 'shakesIceCream'),
-    ],
-  },
-  starters: {
-    name: 'Spring Rolls & Appetizers',
-    shortDescription: 'Spring rolls and appetizers/snacks.',
-    icon: '🥡',
-    image: categoryImages.starters,
-    items: [
-      item('st-1', 'Vegetables Spring Rolls', '70', 'starters'),
-      item('st-2', 'Kurkure Spring Rolls', '150', 'starters'),
-      item('st-3', 'Paneer Corn Spring Rolls', '150', 'starters'),
-      item('st-4', 'Paneer Corn Kurkure Spring Rolls', '150', 'starters'),
-      item('st-5', 'Masala Sweet Corn', '150', 'starters'),
-      item('st-6', 'Crispy Corn', '150', 'starters'),
-      item('st-7', 'Veg Manchurian Dry', '180', 'starters'),
-      item('st-8', 'Chilli Paneer Dry', '120', 'starters'),
-      item('st-9', 'Chilli Mushroom', '120', 'starters'),
-      item('st-10', 'Kurkure Paneer Fingers', '180', 'starters'),
-      item('st-11', 'Crispy Baby Corn', '150', 'starters'),
-      item('st-12', 'Chilli Soya', '260', 'starters'),
-      item('st-13', 'Kurkure Soya Nuggets', '150', 'starters'),
-      item('st-14', 'Loaded Cheesy Nachos', '110', 'starters'),
-      item('st-15', 'Honey Chilli Potato', '130', 'starters'),
-      item('st-16', 'Lotus Stem Honey Chilli', '140', 'starters'),
-      item('st-17', 'Chilli Potato', '150', 'starters'),
-      item('st-18', 'Veg Masala Chaap', '160', 'starters'),
-      item('st-19', 'Paneer Manchurian Dry', '170', 'starters'),
-    ],
-  },
-  hotBeverages: {
-    name: 'Hot Beverages',
-    shortDescription: 'Coffee, tea and winter specials.',
-    icon: '☕',
-    image: categoryImages.hotBeverages,
-    items: [
-      item('hb-1', 'Coffee', '40', 'hotBeverages'),
-      item('hb-2', 'Tea', '30', 'hotBeverages'),
-      item('hb-3', 'Organic Tea', '40', 'hotBeverages'),
-      item('hb-4', 'Lemon Tea', '40', 'hotBeverages'),
-      item('hb-5', 'Shashi Qawah (Winter Special)', '60', 'hotBeverages'),
-    ],
-  },
-  riceNoodlesSoups: {
-    name: 'Rice, Noodles & Soups',
-    shortDescription: 'Fried rice, noodles and soups.',
-    icon: '🍜',
-    image: categoryImages.riceNoodlesSoups,
-    items: [
-      item('rn-1', 'Veg Fried Rice', '100', 'riceNoodlesSoups'),
-      item('rn-2', 'Golden Corn Fried Rice', '100', 'riceNoodlesSoups'),
-      item('rn-3', 'Exotic Vegetable Fried Rice', '100', 'riceNoodlesSoups'),
-      item('rn-4', 'Veg Special Noodles', '100', 'riceNoodlesSoups'),
-      item('rn-5', 'Chilli Garlic Noodles', '100', 'riceNoodlesSoups'),
-      item('rn-6', 'Schezwan Noodles', '130', 'riceNoodlesSoups'),
-      item('rn-7', 'Vegetable Paneer Noodles', '150', 'riceNoodlesSoups'),
-      item('rn-8', 'Exotic Vegetable Noodles', '150', 'riceNoodlesSoups'),
-      item('rn-9', 'Veg Corn Soup', '180', 'riceNoodlesSoups'),
-      item('rn-10', 'Manchow Soup', '200', 'riceNoodlesSoups'),
-      item('rn-11', "Hot 'n' Sour Soup", '260', 'riceNoodlesSoups'),
-      item('rn-12', 'Exotic Vegetables Healthy Soup', '290', 'riceNoodlesSoups'),
-      item('rn-13', 'Lemon Coriander Soup', '320', 'riceNoodlesSoups'),
-    ],
-  },
-  combos: {
-    name: 'Combos',
-    shortDescription: 'Burger, wrap, momos and Chinese platter combos.',
-    icon: '🍱',
-    image: categoryImages.combos,
-    items: [
-      item('co-1', 'Special Burger + Coke', '150', 'combos'),
-      item('co-2', 'Paneer Tikka Wrap + Coke', '170', 'combos'),
-      item('co-3', 'Crispy Paneer Burger + Coke', '190', 'combos'),
-      item('co-4', 'Multigrain Healthy Sandwich + Fresh Lime Soda', '150', 'combos'),
-      item('co-5', 'Veg Cheese Wrap + Coke', '150', 'combos'),
-      item('co-6', 'Kurkure Veg Momos + Coke', '160', 'combos'),
-      item('co-7', 'Pasta (Red/White) + Garlic Bread', '180', 'combos'),
-      item('co-8', 'Chinese Platter (Spring Roll, Momos 4pcs, Honey Chilli Potato)', '180', 'combos'),
-      item('co-9', 'Veg Fried Rice/Noodles With Veg Manchurian', '150', 'combos'),
-      item('co-10', 'Chilli Paneer With Noodles/Fried Rice', '150', 'combos'),
+      ...[
+        ['hot-garlic', 'Vegetables in Hot Garlic Sauce'], ['mushroom-oyster', 'Vegetables in Mushroom & Oyster Sauce'],
+        ['manchurian', 'Vegetables Manchurian Gravy'], ['chilli-paneer', 'Chilli Paneer Gravy'],
+      ].flatMap(([slug, name]) => [item(`gv-${slug}-h`, name, '230', 'gravy', 'Half'), item(`gv-${slug}-f`, name, '280', 'gravy', 'Full')]),
+      item('gv-rogan-josh', 'Veg Rogan Josh with Punjabi Kulcha', '199', 'gravy'),
     ],
   },
   mainCourse: {
-    name: 'Main Course & Gravy',
-    shortDescription: 'Gravy, rice plate, pulao and special Indian combos.',
-    icon: '🍛',
-    image: categoryImages.mainCourse,
+    name: 'Main Course', shortDescription: 'Rajma, paneer, chana, chaap, rice and raita.', icon: '🍛', image: images.main,
+    items: [item('mc-1', 'Jammu Ke Rajma', '149', 'mainCourse'), item('mc-2', 'Kashmiri Palak Paneer', '179', 'mainCourse'), item('mc-3', 'Palak Corn', '179', 'mainCourse'), item('mc-4', 'Kabuli Chana', '149', 'mainCourse'), item('mc-5', 'Vegetarian Masala Chaap', '139', 'mainCourse'), item('mc-6', 'Rice Plate', '119', 'mainCourse'), item('mc-7', 'Vegetarian Pulao', '129', 'mainCourse'), item('mc-8', 'Mixed Raita', '69', 'mainCourse')],
+  },
+  indianCombos: {
+    name: 'Special Indian Combo', shortDescription: 'Half and full Indian meal combos.', icon: '🍱', image: images.combos,
     items: [
-      item('mc-1', 'Vegetables in Hot Garlic Sauce', '130', 'mainCourse'),
-      item('mc-2', 'Vegetables in Mushroom & Oyster Sauce', '150', 'mainCourse'),
-      item('mc-3', 'Vegetables Manchurian Gravy', '150', 'mainCourse'),
-      item('mc-4', 'Veg Rogan Josh With Punjabi Kulcha', '130', 'mainCourse'),
-      item('mc-5', 'Chilly Paneer Gravy', '110', 'mainCourse'),
-      item('mc-6', 'Jammu Ke Rajhma', '110', 'mainCourse'),
-      item('mc-7', 'Kashmiri Palak Paneer', '120', 'mainCourse'),
-      item('mc-8', 'Palak Corn', '60', 'mainCourse'),
-      item('mc-9', 'Kabuli Chana', '60', 'mainCourse'),
-      item('mc-10', 'Vegetarian Masala Chaap', '110', 'mainCourse'),
-      item('mc-11', 'Rice Plate', '140', 'mainCourse'),
-      item('mc-12', 'Vegetarian Pulao', '140', 'mainCourse'),
-      item('mc-13', 'Mixed Raita', '110', 'mainCourse'),
-      item('mc-14', 'Rajhma + Rice', '130', 'mainCourse'),
-      item('mc-15', 'Palak Paneer + Veg Pulao', '140', 'mainCourse'),
-      item('mc-16', 'Palak Corn + Veg Pulao', '110', 'mainCourse'),
-      item('mc-17', 'Kabuli Chana + Rice', '110', 'mainCourse'),
-      item('mc-18', 'Tuesday Special Curry Pakora + Rice', '60', 'mainCourse'),
-      item('mc-19', 'Veg Special Chaap + Rice', '150', 'mainCourse'),
-      item('mc-20', 'Veg Chaap + Kulcha', '220', 'mainCourse'),
-      item('mc-21', 'Dahi Bhalla', '160', 'mainCourse'),
-      item('mc-22', 'Lassi Sweet/Salty', '240', 'mainCourse'),
-      item('mc-23', 'Rajhma Dip Kulcha', '180', 'mainCourse'),
-      item('mc-24', 'Chana Dip Kulcha', '250', 'mainCourse'),
+      ...[
+        ['rajma-rice', 'Rajma + Rice', '90', '119'], ['rajma-kulcha', 'Rajma Dip Kulcha', '90', '119'],
+        ['chana-kulcha', 'Chana Dip Kulcha', '90', '119'], ['chana-rice', 'Kabuli Chana + Rice', '90', '119'],
+        ['palak-paneer', 'Palak Paneer + Veg Pulao', '119', '149'], ['palak-corn', 'Palak Corn + Veg Pulao', '119', '149'],
+        ['curry-pakora', 'Tuesday Special Curry Pakora + Rice', '109', '139'], ['chaap-rice', 'Veg Special Chaap + Rice', '119', '149'],
+        ['chaap-kulcha', 'Veg Chaap + Kulcha', '119', '149'],
+      ].flatMap(([slug, name, half, full]) => [item(`ic-${slug}-h`, name, half, 'indianCombos', 'Half'), item(`ic-${slug}-f`, name, full, 'indianCombos', 'Full')]),
+      item('ic-dahi', 'Dahi Bhalla', '69', 'indianCombos'), item('ic-lassi', 'Lassi Sweet / Salty', '69', 'indianCombos'),
+      item('ic-ghee', 'Desi Ghee', '25', 'indianCombos', 'Add-on'), item('ic-paneer', 'Paneer', '25', 'indianCombos', 'Add-on'),
     ],
   },
+  riceNoodles: {
+    name: 'Rice / Noodles', shortDescription: 'Fried rice and noodles.', icon: '🍜', image: images.rice,
+    items: [item('rn-1', 'Veg Fried Rice', '159', 'riceNoodles'), item('rn-2', 'Golden Corn & Paneer Fried Rice', '179', 'riceNoodles'), item('rn-3', 'Exotic Vegetable Fried Rice', '199', 'riceNoodles'), item('rn-4', 'Veg Special Noodles', '159', 'riceNoodles'), item('rn-5', 'Chilli Garlic Noodles', '159', 'riceNoodles'), item('rn-6', 'Schezwan Noodles', '169', 'riceNoodles'), item('rn-7', 'Vegetable Paneer Noodles', '189', 'riceNoodles'), item('rn-8', 'Exotic Vegetable Noodles', '189', 'riceNoodles')],
+  },
   thali: {
-    name: 'Thali',
-    shortDescription: 'Full thali with raita, roti, vegetables and rice.',
-    icon: '🍽️',
-    image: categoryImages.thali,
-    items: [
-      item('th-1', 'Thali With Raita + Sweet Dish + 2 Tawa Roti + 2 Vegetable Dishes + Paneer Dish + Veg Pulao', '210', 'thali'),
-      item('th-2', 'Thali With Raita & 2 Tawa Roti + 2 Dishes + 1 Paneer + Rice', '180', 'thali'),
-    ],
+    name: 'Thali', shortDescription: 'Complete vegetarian thalis.', icon: '🍽️', image: images.thali,
+    items: [item('th-1', 'Thali with Raita + Sweet Dish + 2 Tawa Roti + 2 Vegetable Dishes + Paneer Dish + Veg Pulao', '219', 'thali'), item('th-2', 'Thali with Raita + 2 Tawa Roti + 2 Dishes + 1 Paneer + Rice', '189', 'thali')],
+  },
+  hotBeverages: {
+    name: 'Hot Beverages', shortDescription: 'Coffee, tea and winter special qawah.', icon: '☕', image: images.tea,
+    items: [item('hb-1', 'Coffee', '40', 'hotBeverages'), item('hb-2', 'Tea', '30', 'hotBeverages'), item('hb-3', 'Organic Tea', '40', 'hotBeverages'), item('hb-4', 'Lemon Tea', '40', 'hotBeverages'), item('hb-5', 'Shashi Qawah (Winter Special)', '60', 'hotBeverages')],
+  },
+  iceCream: {
+    name: 'Ice Cream', shortDescription: 'Ice cream, fudge, fruit cocktail and brownie.', icon: '🍦', image: images.dessert,
+    items: [item('icr-1', 'Ice Cream', '99', 'iceCream', 'Real strawberry / pineapple / mix berries'), item('icr-2', 'Hot Chocolate Fudge', '139', 'iceCream'), item('icr-3', 'Fruit Cocktail', '149', 'iceCream'), item('icr-4', 'Choco Brownie with Ice Cream', '129', 'iceCream')],
   },
 }
 
-export function generateWhatsAppOrderMessage(item: MenuItem): string {
-  return `Hi Mango, I would like to order:
-
-${item.name}
-${item.quantity} – ${item.price}
-
-Please confirm availability. Thank you!`
+export function generateWhatsAppOrderMessage(menuItem: MenuItem): string {
+  return `Hi Mango, I would like to order:\n\n${menuItem.name}\n${menuItem.quantity} - ${menuItem.price}\n\nPlease confirm availability. Thank you!`
 }
 
 export interface CartItem extends MenuItem {
@@ -409,25 +291,10 @@ export interface CartItem extends MenuItem {
 }
 
 export function generateWhatsAppCartMessage(cartItems: CartItem[], totalPrice: number): string {
-  const itemsList = cartItems
-    .map((item) => {
-      const priceStr = item.price.replace('₹', '').replace(',', '')
-      const unitPrice = parseFloat(priceStr.replace(/\/.*/, '').trim())
-      const totalItemPrice = (isNaN(unitPrice) ? 0 : unitPrice) * item.cartQuantity
-      return `• ${item.name}\n  ${item.quantity} × ${item.cartQuantity} = ₹${totalItemPrice.toFixed(0)}`
-    })
-    .join('\n\n')
-
-  const totalItemsCount = cartItems.reduce((sum, item) => sum + item.cartQuantity, 0)
-
-  return `Hi Mango, I would like to place an order:
-
-${itemsList}
-
-━━━━━━━━━━━━━━━━━━━━
-Total items: ${totalItemsCount}
-Estimated total: ₹${totalPrice.toFixed(0)}
-━━━━━━━━━━━━━━━━━━━━
-
-Please confirm availability and final price. Thank you!`
+  const itemsList = cartItems.map((cartItem) => {
+    const unitPrice = Number.parseFloat(cartItem.price.replace('₹', '').replace(',', ''))
+    return `• ${cartItem.name}\n  ${cartItem.quantity} × ${cartItem.cartQuantity} = ₹${((Number.isNaN(unitPrice) ? 0 : unitPrice) * cartItem.cartQuantity).toFixed(0)}`
+  }).join('\n\n')
+  const totalItemsCount = cartItems.reduce((sum, cartItem) => sum + cartItem.cartQuantity, 0)
+  return `Hi Mango, I would like to place an order:\n\n${itemsList}\n\n━━━━━━━━━━━━━━━━━━━━\nTotal items: ${totalItemsCount}\nEstimated total: ₹${totalPrice.toFixed(0)}\n━━━━━━━━━━━━━━━━━━━━\n\nPlease confirm availability and final price. Thank you!`
 }
