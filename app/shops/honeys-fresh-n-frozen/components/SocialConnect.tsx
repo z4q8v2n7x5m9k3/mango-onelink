@@ -16,10 +16,10 @@ export default function SocialConnect() {
     >
       <div className="section-shell section-shell-light">
         <div className="section-shell-inner p-6 text-center">
-          <div className="absolute right-0 top-0 h-28 w-28 rounded-full bg-[#FBEC89]/25 blur-3xl" />
+          <div className="absolute right-0 top-0 h-28 w-28 rounded-full bg-[#D9AD49]/25 blur-3xl" />
 
           <div className="flex items-center justify-center gap-4 mb-5">
-            <div className="w-20 h-20 bg-white rounded-[22px] flex items-center justify-center shadow-[0_18px_34px_rgba(15,23,42,0.1)] border border-[#FBEC89]/30 overflow-hidden">
+            <div className="w-20 h-20 bg-white rounded-[22px] flex items-center justify-center shadow-[0_18px_34px_rgba(15,23,42,0.1)] border border-[#D9AD49]/30 overflow-hidden">
               <Image
                 src={shopConfig.assets.logo}
                 alt={shopConfig.name}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 // Shop-specific components
 import Hero from './shops/honeys-fresh-n-frozen/components/Hero'
@@ -18,12 +18,10 @@ import BackToTop from './components/BackToTop'
 import LoadingScreen from './components/LoadingScreen'
 
 export default function Home() {
-  const [showLoading, setShowLoading] = useState(() => {
-    if (typeof window === 'undefined') return true
-    return sessionStorage.getItem('mangoLandingLoaded') !== 'true'
-  })
+  // Keep the server and first client render identical; the stored visit flag is read only after hydration.
+  const [showLoading, setShowLoading] = useState(true)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // Show the branded loading screen only on the first landing-page entry per tab.
     if (typeof window !== 'undefined' && sessionStorage.getItem('mangoLandingLoaded') === 'true') {
       setShowLoading(false)

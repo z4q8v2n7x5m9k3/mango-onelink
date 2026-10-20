@@ -36,12 +36,34 @@ export type MenuCategoryKey =
   | 'hotBeverages'
   | 'iceCream'
 
-function getItemImage(category: string, itemName: string): string {
-  const imageName = itemName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')
-  return `/menu-items/${category}/${imageName}.jpg`
+function getItemImage(category: string): string {
+  const categoryImages: Record<string, string> = {
+    pizza: images.pizza,
+    bestSellersCombos: images.combos,
+    burgers: images.burgers,
+    sandwiches: images.sandwiches,
+    healthySandwiches: images.sandwiches,
+    momos: images.momos,
+    mojitos: images.drinks,
+    healthyRefreshers: images.smoothies,
+    pasta: images.pasta,
+    maggi: images.rice,
+    fries: images.fries,
+    smoothies: images.smoothies,
+    shakes: images.dessert,
+    wraps: images.wraps,
+    springRolls: images.momos,
+    appetizers: images.starters,
+    soups: images.soups,
+    gravy: images.main,
+    mainCourse: images.thali,
+    indianCombos: images.combos,
+    riceNoodles: images.rice,
+    thali: images.thali,
+    hotBeverages: images.tea,
+    iceCream: images.dessert,
+  }
+  return categoryImages[category] ?? images.combos
 }
 
 function item(
@@ -59,7 +81,7 @@ function item(
     price: `₹${price}`,
     category,
     description,
-    image: getItemImage(category, name),
+    image: getItemImage(category),
   }
 }
 
@@ -72,23 +94,23 @@ export interface MenuCategoryConfig {
 }
 
 const images = {
-  pizza: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop',
-  combos: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop',
-  burgers: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400&h=300&fit=crop',
-  sandwiches: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=400&h=300&fit=crop',
-  momos: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=400&h=300&fit=crop',
-  drinks: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=400&h=300&fit=crop',
-  pasta: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=400&h=300&fit=crop',
-  fries: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=400&h=300&fit=crop',
-  smoothies: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop',
-  wraps: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=400&h=300&fit=crop',
-  starters: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&h=300&fit=crop',
-  soups: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400&h=300&fit=crop',
-  main: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&h=300&fit=crop',
-  rice: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400&h=300&fit=crop',
-  thali: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400&h=300&fit=crop',
-  tea: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=400&h=300&fit=crop',
-  dessert: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=400&h=300&fit=crop',
+  pizza: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=900&h=760&q=85',
+  combos: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=900&h=760&q=85',
+  burgers: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&h=760&q=85',
+  sandwiches: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=900&h=760&q=85',
+  momos: 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?auto=format&fit=crop&w=900&h=760&q=85',
+  drinks: 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?auto=format&fit=crop&w=900&h=760&q=85',
+  pasta: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=900&h=760&q=85',
+  fries: 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=900&h=760&q=85',
+  smoothies: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&w=900&h=760&q=85',
+  wraps: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=900&h=760&q=85',
+  starters: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&h=760&q=85',
+  soups: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=900&h=760&q=85',
+  main: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=900&h=760&q=85',
+  rice: 'https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=900&h=760&q=85',
+  thali: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=900&h=760&q=85',
+  tea: 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?auto=format&fit=crop&w=900&h=760&q=85',
+  dessert: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=900&h=760&q=85',
 }
 
 export const menuCategories: Record<MenuCategoryKey, MenuCategoryConfig> = {

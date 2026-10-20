@@ -1,693 +1,144 @@
 'use client'
 
-import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Phone, Download, MapPin, ShoppingCart, Star, X, ShoppingBag } from 'lucide-react'
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { shopConfig, ContactPerson } from '../config'
-import { getTelLink, getWhatsAppLink, formatPhoneDisplay } from '../../../lib/phone'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Download, Phone, ShoppingBag, Star } from 'lucide-react'
+import GoogleGIcon from '../../../components/GoogleGIcon'
+import { shopConfig } from '../config'
+import { getTelLink, getWhatsAppLink } from '../../../lib/phone'
 import { generateVCard, downloadVCard } from '../../../lib/vcard'
-import { useLanguage } from '../../../contexts/LanguageContext'
 import OrderTypeSheet from '../../../components/OrderTypeSheet'
 
-interface ActionsRowProps {
-  onOpenPayments?: () => void
-}
+interface ActionsRowProps { onOpenPayments?: () => void }
+export interface ActionsRowRef { openWhatsAppSelector: () => void; openInstagramSelector: () => void }
 
-export interface ActionsRowRef {
-  openWhatsAppSelector: () => void
-  openInstagramSelector: () => void
-}
+const foodImages = ['/gallery/unnamed.webp', '/gallery/unnamed%20(2).webp', '/gallery/unnamed%20(4).webp']
+const menuThumbs = ['/gallery/unnamed%20(1).webp', '/gallery/unnamed%20(3).webp', '/gallery/unnamed%20(5).webp']
+const pill = "relative flex h-11 min-w-0 items-center justify-center gap-2 overflow-hidden rounded-2xl transition-all duration-200 active:scale-[.97] touch-manipulation"
 
 const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments }, ref) => {
-  const { t } = useLanguage()
-  const [callSelectorOpen, setCallSelectorOpen] = useState(false)
-  const [whatsappSelectorOpen, setWhatsappSelectorOpen] = useState(false)
-  const [instagramSelectorOpen, setInstagramSelectorOpen] = useState(false)
-  const [orderTypeSelectorOpen, setOrderTypeSelectorOpen] = useState(false)
-  const callSelectorRef = useRef<HTMLDivElement>(null)
-  const whatsappSelectorRef = useRef<HTMLDivElement>(null)
-  const instagramSelectorRef = useRef<HTMLDivElement>(null)
+  const [orderOpen, setOrderOpen] = useState(false)
+  const [menuImageIndex, setMenuImageIndex] = useState(0)
 
-  // Expose WhatsApp selector toggle to parent via ref
+  useEffect(() => {
+    const timer = window.setInterval(() => setMenuImageIndex((index) => (index + 1) % foodImages.length), 4200)
+    return () => window.clearInterval(timer)
+  }, [])
+
   useImperativeHandle(ref, () => ({
     openWhatsAppSelector: () => {
-      setWhatsappSelectorOpen(true)
-      setCallSelectorOpen(false)
-      setInstagramSelectorOpen(false)
+      const person = shopConfig.contactPersons[0]
+      if (person) window.open(getWhatsAppLink(person.whatsappE164, `Hello ${person.label}, I'd like to know more about Mango.`), '_blank', 'noopener,noreferrer')
     },
     openInstagramSelector: () => {
-      setInstagramSelectorOpen(true)
-      setCallSelectorOpen(false)
-      setWhatsappSelectorOpen(false)
-    }
+      if (shopConfig.social.instagram) window.open(shopConfig.social.instagram, '_blank', 'noopener,noreferrer')
+    },
   }))
 
-  // Close on outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (callSelectorOpen || whatsappSelectorOpen || instagramSelectorOpen) {
-        const target = e.target as HTMLElement
-        if (!target.closest('.popup-selector') && !target.closest('[data-call-button]') && !target.closest('[data-whatsapp-button]') && !target.closest('[data-instagram-button]')) {
-          setCallSelectorOpen(false)
-          setWhatsappSelectorOpen(false)
-          setInstagramSelectorOpen(false)
-        }
-      }
-    }
-
-    if (callSelectorOpen || whatsappSelectorOpen || instagramSelectorOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      document.body.style.overflow = 'hidden'
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-      document.body.style.overflow = 'unset'
-    }
-  }, [callSelectorOpen, whatsappSelectorOpen, instagramSelectorOpen])
-
-  const handleCall = (person: ContactPerson) => {
-    const telLink = getTelLink(person.phoneE164)
-    window.location.href = telLink
-    setCallSelectorOpen(false)
-  }
-
-  const handleWhatsApp = (person: ContactPerson) => {
-    const message = `Hello ${person.label}, I want to place an order. Please share today's availability and rates.`
-    const whatsappLink = getWhatsAppLink(person.whatsappE164, message)
-    window.open(whatsappLink, '_blank')
-    setWhatsappSelectorOpen(false)
-  }
-
-  const handleDirections = () => {
-    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shopConfig.contact.mapQuery)}`
-    window.open(mapUrl, '_blank')
-  }
-
-  const handleSaveContact = () => {
-    const vCard = generateVCard({
+  const saveContact = () => {
+    const card = generateVCard({
       name: shopConfig.name,
       organization: shopConfig.name,
       title: shopConfig.tagline,
-      phones: shopConfig.contactPersons.map(p => p.phoneE164.replace(/^91/, '')),
+      phones: shopConfig.contactPersons.map((person) => person.phoneE164.replace(/^91/, '')),
       address: shopConfig.contact.address,
       website: shopConfig.url,
-      note: [
-        shopConfig.tagline,
-        shopConfig.contact.storeHours,
-        `Website: ${shopConfig.url}`,
-      ].join('\n'),
     })
-    downloadVCard(vCard, `${shopConfig.name.replace(/\s+/g, '-')}-contact.vcf`)
+    downloadVCard(card, 'Mango-contact.vcf')
   }
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: shopConfig.name,
-          text: `${shopConfig.name} - ${shopConfig.tagline}. Menu, reviews & order: ${shopConfig.url}`,
-          url: shopConfig.url,
-        })
-      } catch (err) {
-      }
-    } else {
-      navigator.clipboard.writeText(window.location.href)
-      alert('Link copied to clipboard!')
-    }
-  }
+  const person = shopConfig.contactPersons[0]
+  const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shopConfig.contact.mapQuery)}`
 
-
-  return (
-    <>
-      <div className="space-y-3 w-full max-w-full min-w-0" onClick={(e) => e.stopPropagation()}>
-        {/* Row 1: Call Now + Order Online */}
-        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          <Button
-            data-call-button
-            onClick={(e) => {
-              e.stopPropagation()
-              setCallSelectorOpen(!callSelectorOpen)
-              setWhatsappSelectorOpen(false)
-            }}
-            className="w-full min-w-0 h-11 text-white font-semibold rounded-full transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden group"
-            style={{
-              background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%)',
-              boxShadow: '0 8px 20px rgba(37, 99, 235, 0.4), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 12px 28px rgba(37, 99, 235, 0.5), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
-              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
-              e.currentTarget.style.background = 'linear-gradient(135deg, #4A90F4 0%, #2E7CE8 50%, #2563EB 100%)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 20px rgba(37, 99, 235, 0.4), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-              e.currentTarget.style.transform = 'translateY(-1px) scale(1)'
-              e.currentTarget.style.background = 'linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%)'
-            }}
-          >
-            <Phone className="w-4 h-4 relative z-10" style={{ filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2))' }} />
-            <span className="text-sm font-bold relative z-10 truncate" style={{ fontSize: '14px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' }}>{t('callNow')}</span>
-          </Button>
-
-          <Link
-            href="/menu?mode=order&type=online"
-            onClick={(e) => e.stopPropagation()}
-            className="min-w-0 h-11 text-white font-semibold rounded-full transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden"
-            style={{
-              background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%)',
-              boxShadow: '0 8px 20px rgba(37, 99, 235, 0.4), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 12px 28px rgba(37, 99, 235, 0.5), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
-              e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)'
-              e.currentTarget.style.background = 'linear-gradient(135deg, #4A90F4 0%, #2E7CE8 50%, #2563EB 100%)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 8px 20px rgba(37, 99, 235, 0.4), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-              e.currentTarget.style.transform = 'translateY(-1px) scale(1)'
-              e.currentTarget.style.background = 'linear-gradient(135deg, #3B82F6 0%, #2563EB 50%, #1D4ED8 100%)'
-            }}
-          >
-            <ShoppingCart className="w-4 h-4 shrink-0 text-white relative z-10" strokeWidth={2.25} aria-hidden />
-            <span className="text-sm font-bold truncate relative z-10" style={{ color: '#FFFFFF', fontSize: '14px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)' }}>Order Online</span>
-          </Link>
-        </div>
-
-        {/* Row 2: Dine/Pickup + View Menu */}
-        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation()
-              setOrderTypeSelectorOpen(true)
-            }}
-            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
-            style={{
-              color: '#0F172A',
-              boxShadow: '0 8px 16px rgba(15, 118, 110, 0.22), 0 4px 8px rgba(15, 118, 110, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 10px 20px rgba(15, 118, 110, 0.28), 0 6px 12px rgba(15, 118, 110, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 8px 16px rgba(15, 118, 110, 0.22), 0 4px 8px rgba(15, 118, 110, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            <ShoppingBag className="w-4 h-4 shrink-0 text-teal-700" strokeWidth={2.35} aria-hidden />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Dine/Pickup</span>
-          </button>
-          <Link
-            href="/menu"
-            onClick={(e) => e.stopPropagation()}
-            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation border border-slate-200/90"
-            style={{
-              color: '#0F172A',
-              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            <Image src="/menu-icon.png" alt="" aria-hidden width={20} height={20} className="h-5 w-5 shrink-0 object-contain" />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>View Menu</span>
-          </Link>
-        </div>
-
-        {/* Row 3: Instagram + Payment */}
-        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          <Button
-            data-instagram-button
-            onClick={(e) => {
-              e.stopPropagation()
-              setInstagramSelectorOpen(!instagramSelectorOpen)
-              setCallSelectorOpen(false)
-              setWhatsappSelectorOpen(false)
-            }}
-            className="w-full min-w-0 h-11 bg-white/90 hover:bg-white text-slate-900 font-semibold rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden border border-slate-200/90"
-            style={{
-              boxShadow: '0 8px 16px rgba(225, 48, 108, 0.16), 0 4px 8px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 10px 20px rgba(225, 48, 108, 0.22), 0 6px 12px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow =
-                '0 8px 16px rgba(225, 48, 108, 0.16), 0 4px 8px rgba(15, 23, 42, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            <Image
-              src="/instagram-logo-transparent.webp"
-              alt=""
-              width={28}
-              height={28}
-              className="h-7 w-7 shrink-0 object-contain"
-            />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Instagram</span>
-          </Button>
-          {onOpenPayments && (
-            <div className="min-w-0 relative">
-              <Button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onOpenPayments()
-                }}
-                className="w-full min-w-0 h-11 bg-white/90 hover:bg-white text-slate-900 font-semibold rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation relative overflow-hidden border border-slate-200/90"
-                style={{
-                  background:
-                    'radial-gradient(circle at 30% 30%, rgb(21, 124, 130) 0%, rgb(15, 118, 110) 40%, rgb(17, 19, 21) 100%)',
-                  boxShadow:
-                    '0 8px 20px rgba(21, 124, 130, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)',
-                  borderColor: 'rgba(255, 255, 255, 0.22)',
-                  borderRadius: '16px',
-                  fontSize: '14px',
-                  WebkitTapHighlightColor: 'transparent',
-                  transform: 'translateY(-1px)'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    '0 12px 28px rgba(21, 124, 130, 0.5), 0 6px 12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
-                  e.currentTarget.style.transform = 'translateY(-2px)'
-                  e.currentTarget.style.background =
-                    'radial-gradient(circle at 30% 30%, rgb(25, 140, 145) 0%, rgb(20, 130, 120) 40%, rgb(20, 25, 30) 100%)'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow =
-                    '0 8px 20px rgba(21, 124, 130, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
-                  e.currentTarget.style.transform = 'translateY(-1px)'
-                  e.currentTarget.style.background =
-                    'radial-gradient(circle at 30% 30%, rgb(21, 124, 130) 0%, rgb(15, 118, 110) 40%, rgb(17, 19, 21) 100%)'
-                }}
-              >
-                <Image
-                  src="/icons8-bhim-48.png"
-                  alt="Payment"
-                  width={16}
-                  height={16}
-                  className="w-4 h-4 object-contain relative z-10"
-                  style={{ filter: 'brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))' }}
-                />
-                <span
-                  className="text-sm font-bold relative z-10 truncate"
-                  style={{ color: '#FFFFFF', fontSize: '14px', textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)' }}
-                >
-                  {t('openPayment')}
-                </span>
-              </Button>
-            </div>
-          )}
-        </div>
-
-        {/* Row 4: Zomato left, Swiggy right */}
-        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          {shopConfig.social?.zomato && (
-            <Link
-              href={shopConfig.social.zomato}
-              onClick={(e) => e.stopPropagation()}
-              className="min-w-0 h-11 rounded-2xl transition-all flex items-center justify-center active:scale-[0.97] touch-manipulation hover:opacity-95"
-              style={{
-                background: '#E23744',
-                boxShadow: '0 4px 12px rgba(226, 55, 68, 0.4), 0 2px 6px rgba(0, 0, 0, 0.1)',
-                borderRadius: '16px',
-                WebkitTapHighlightColor: 'transparent'
-              }}
-            >
-              <Image
-                src="/Zomato_Logo_1.png"
-                alt="Zomato"
-                width={104}
-                height={28}
-                className="h-[28px] w-auto object-contain"
-                priority
-              />
-            </Link>
-          )}
-          {shopConfig.social?.swiggy && (
-            <Link
-              href={shopConfig.social.swiggy}
-              onClick={(e) => e.stopPropagation()}
-              className="min-w-0 h-11 rounded-2xl transition-all flex items-center justify-center active:scale-[0.97] touch-manipulation hover:opacity-95 border-2"
-              style={{
-                background: '#FFFFFF',
-                borderColor: '#FC8019',
-                boxShadow: '0 4px 12px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.1)',
-                borderRadius: '16px',
-                WebkitTapHighlightColor: 'transparent'
-              }}
-            >
-              <Image
-                src="/image copy.png"
-                alt="Swiggy"
-                width={92}
-                height={24}
-                className="h-[24px] w-auto object-contain"
-                priority
-              />
-            </Link>
-          )}
-        </div>
-
-        {/* Row 4: Reviews, Location */}
-        <div className="grid grid-cols-2 gap-2 w-full min-w-0">
-          <Link
-            href="/reviews"
-            onClick={(e) => e.stopPropagation()}
-            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation"
-            style={{
-              color: '#0F172A',
-              boxShadow: '0 8px 16px rgba(234, 179, 8, 0.25), 0 4px 8px rgba(234, 179, 8, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 10px 20px rgba(234, 179, 8, 0.3), 0 6px 12px rgba(234, 179, 8, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 16px rgba(234, 179, 8, 0.25), 0 4px 8px rgba(234, 179, 8, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            <Star className="w-4 h-4" style={{ color: '#EAB308' }} fill="#EAB308" />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Reviews</span>
-          </Link>
-          <Button
-            onClick={handleDirections}
-            className="w-full min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation"
-            style={{
-              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            <MapPin className="w-4 h-4" style={{ color: '#EF4444', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))' }} />
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Location</span>
-          </Button>
-        </div>
-
-        {/* Bottom Row: Save Contact & Gallery – equal width, responsive */}
-        <div className="grid grid-cols-2 gap-2 w-full min-w-0 actions-row-bottom">
-          <Button
-            onClick={handleSaveContact}
-            className="w-full min-w-0 h-11 bg-white/90 hover:bg-white backdrop-blur-md text-slate-700 rounded-2xl border-2 border-teal-500/70 hover:border-teal-600/90 relative overflow-hidden transition-all touch-manipulation"
-            style={{
-              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              fontSize: '14px',
-              WebkitTapHighlightColor: 'transparent',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 10px 20px rgba(21, 124, 130, 0.25), 0 6px 12px rgba(21, 124, 130, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            {/* Animated border highlight glow */}
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-teal-400/30 to-transparent animate-[shimmer_2s_infinite] pointer-events-none" />
-            <div className="relative z-10 flex items-center justify-center gap-2">
-              <Download className="w-4 h-4" />
-              <span className="text-sm font-bold truncate" style={{ fontSize: '14px' }}>{t('saveContact')}</span>
-            </div>
-          </Button>
-          <Link 
-            href="/gallery" 
-            className="min-w-0 h-11 bg-white/90 backdrop-blur-md hover:bg-white rounded-2xl transition-all flex items-center justify-center gap-1.5 sm:gap-2 active:scale-[0.97] touch-manipulation"
-            style={{ 
-              color: '#0F172A',
-              boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)',
-              borderRadius: '16px',
-              WebkitTapHighlightColor: 'transparent',
-              fontSize: '14px',
-              transform: 'translateY(-1px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
-              e.currentTarget.style.transform = 'translateY(-2px)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
-              e.currentTarget.style.transform = 'translateY(-1px)'
-            }}
-          >
-            <div className="flex items-center -space-x-1.5 relative z-10">
-              <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center overflow-hidden relative"
-                style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' }}
-              >
-                <img
-                  src="/gallery/unnamed.webp"
-                  alt="Gallery"
-                  className="w-full h-full object-cover"
-                  loading="eager"
-                />
-              </div>
-              <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center overflow-hidden relative"
-                style={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)' }}
-              >
-                <img
-                  src="/gallery/unnamed (1).webp"
-                  alt="Gallery"
-                  className="w-full h-full object-cover"
-                  loading="eager"
-                />
-              </div>
-            </div>
-            <span className="text-sm font-bold truncate" style={{ color: '#0F172A', fontSize: '14px' }}>Gallery</span>
-          </Link>
-        </div>
-
-
-        {/* Call Selector - Bottom Pop-out */}
-        <AnimatePresence>
-          {callSelectorOpen && (
-            <>
-              {/* Popup */}
-              <motion.div
-                ref={callSelectorRef}
-                initial={{ y: '100%', opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: '100%', opacity: 0 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="popup-selector fixed bottom-0 left-0 right-0 z-[9999] bg-white rounded-3xl shadow-2xl p-6 pb-8 m-4 mb-6"
-                style={{ 
-                  paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))',
-                  maxHeight: '80vh'
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="text-base font-semibold text-slate-800">Select Number to Call</div>
-                  <button
-                    onClick={() => setCallSelectorOpen(false)}
-                    className="p-2 rounded-full hover:bg-slate-100 transition-colors"
-                    aria-label="Close"
-                  >
-                    <X className="w-5 h-5 text-slate-600" />
-                  </button>
-                </div>
-                <div className="flex gap-4 justify-center flex-wrap">
-                  {shopConfig.contactPersons.map((person) => (
-                    <motion.button
-                      key={person.label}
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: shopConfig.contactPersons.indexOf(person) * 0.1 }}
-                      onClick={() => handleCall(person)}
-                      className="flex flex-col items-center gap-2 touch-manipulation"
-                      style={{ WebkitTapHighlightColor: 'transparent' }}
-                    >
-                      <div className="w-16 h-16 bg-gradient-to-br from-mango-green to-mango-greenSoft rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform">
-                        <Phone className="w-7 h-7 text-white" />
-                      </div>
-                      <span className="text-xs font-semibold text-slate-800 text-center">{person.label}</span>
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-
-        {/* WhatsApp Selector - Bottom Pop-out */}
-        <AnimatePresence>
-          {whatsappSelectorOpen && (
-            <>
-              {/* Popup */}
-              <motion.div
-                ref={whatsappSelectorRef}
-                initial={{ y: '100%', opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: '100%', opacity: 0 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="popup-selector fixed bottom-0 left-0 right-0 z-[9999] bg-white rounded-3xl shadow-2xl p-6 pb-8 m-4 mb-6"
-                style={{ 
-                  paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))',
-                  maxHeight: '80vh'
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="text-base font-semibold text-slate-800">Select Number for WhatsApp</div>
-                  <button
-                    onClick={() => setWhatsappSelectorOpen(false)}
-                    className="p-2 rounded-full hover:bg-slate-100 transition-colors"
-                    aria-label="Close"
-                  >
-                    <X className="w-5 h-5 text-slate-600" />
-                  </button>
-                </div>
-                <div className="flex gap-4 justify-center flex-wrap">
-                  {shopConfig.contactPersons.map((person) => (
-                    <motion.button
-                      key={person.label}
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: shopConfig.contactPersons.indexOf(person) * 0.1 }}
-                      onClick={() => handleWhatsApp(person)}
-                      className="flex flex-col items-center gap-2 touch-manipulation"
-                      style={{ WebkitTapHighlightColor: 'transparent' }}
-                    >
-                      <div className="w-16 h-16 bg-gradient-to-br from-[#25D366] to-[#20BA5A] rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform">
-                        <svg viewBox="0 0 24 24" className="w-8 h-8" fill="white">
-                          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                        </svg>
-                      </div>
-                      <span className="text-xs font-semibold text-slate-800 text-center">{person.label}</span>
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-
-        {/* Instagram Selector - Bottom Pop-out */}
-        <AnimatePresence>
-          {instagramSelectorOpen && (
-            <>
-              {/* Popup */}
-              <motion.div
-                ref={instagramSelectorRef}
-                initial={{ y: '100%', opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: '100%', opacity: 0 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="popup-selector fixed bottom-0 left-0 right-0 z-[9999] bg-white rounded-3xl shadow-2xl p-6 pb-8 m-4 mb-6"
-                style={{ 
-                  paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom))',
-                  maxHeight: '80vh'
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="text-base font-bold text-slate-800">Follow us on Instagram</div>
-                  <button
-                    onClick={() => setInstagramSelectorOpen(false)}
-                    className="p-2 rounded-full hover:bg-slate-100 transition-colors"
-                    aria-label="Close"
-                  >
-                    <X className="w-5 h-5 text-slate-600" />
-                  </button>
-                </div>
-                <div className="flex gap-6 justify-center flex-wrap">
-                  {shopConfig.social?.instagram && (
-                    <motion.button
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: 0.1 }}
-                      onClick={() => {
-                        window.open(shopConfig.social.instagram, '_blank', 'noopener,noreferrer')
-                        setInstagramSelectorOpen(false)
-                      }}
-                      className="flex flex-col items-center gap-3 touch-manipulation"
-                      style={{ WebkitTapHighlightColor: 'transparent' }}
-                    >
-                      <div className="w-20 h-20 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform overflow-hidden p-1"
-                        style={{
-                          background: 'linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)',
-                        }}
-                      >
-                        <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
-                          <Image
-                            src="/instagram-logo-transparent.webp"
-                            alt="Instagram"
-                            width={72}
-                            height={72}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-sm font-bold text-slate-800 mb-1">Follow @mangojammu</div>
-                        <div className="text-xs text-slate-600">@mangojammu</div>
-                      </div>
-                    </motion.button>
-                  )}
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+  return <>
+    <div className="w-full space-y-3" data-actions-row onClick={(event) => event.stopPropagation()}>
+      {/* Burger Bazaar sizing: compact 44px round primary actions */}
+      <div className="grid grid-cols-2 gap-2">
+        <a href={person ? getTelLink(person.phoneE164) : `tel:${shopConfig.contact.phones[0]}`} className="relative flex h-11 min-w-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-[#184D3B] px-2 text-sm font-bold text-white shadow-[0_8px_20px_rgba(24,77,59,.22),0_4px_8px_rgba(21,21,21,.08),inset_0_1px_0_rgba(255,255,255,.12)] transition duration-200 hover:brightness-[1.03] active:scale-[.97] before:absolute before:inset-x-4 before:top-0 before:h-[38%] before:rounded-full before:bg-gradient-to-b before:from-white/10 before:to-transparent before:content-['']">
+          <Phone className="relative z-10 h-4 w-4 shrink-0" /><span className="relative z-10 truncate">Call Now</span>
+        </a>
+        <button type="button" onClick={() => setOrderOpen(true)} className="relative flex h-11 min-w-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-[#184D3B] px-2 text-sm font-bold text-white shadow-[0_8px_20px_rgba(24,77,59,.22),0_4px_8px_rgba(21,21,21,.08),inset_0_1px_0_rgba(255,255,255,.12)] transition duration-200 hover:brightness-[1.03] active:scale-[.97] before:absolute before:inset-x-4 before:top-0 before:h-[38%] before:rounded-full before:bg-gradient-to-b before:from-white/10 before:to-transparent before:content-['']">
+          <ShoppingBag className="relative z-10 h-4 w-4 shrink-0" /><span className="relative z-10 truncate">Order Now</span>
+        </button>
       </div>
 
-      <OrderTypeSheet
-        open={orderTypeSelectorOpen}
-        onClose={() => setOrderTypeSelectorOpen(false)}
-        options={['dine-in', 'takeaway']}
-      />
-    </>
-  )
+      {/* Same photo-led, animated full-width menu banner; Mango food photography */}
+      <Link href="/menu" className="group relative block min-h-[82px] overflow-hidden rounded-[22px] p-[2px] shadow-[0_12px_28px_rgba(21,21,21,.13),0_5px_13px_rgba(30,77,61,.13)] transition active:scale-[.985]">
+        <span className="absolute inset-0 rounded-[22px] bg-gradient-to-r from-[#FFFDF7] via-[#a8c8ac] to-[#184D3B]" aria-hidden />
+        <span className="relative flex min-h-[78px] items-center overflow-hidden rounded-[20px] bg-[#184D3B] px-3.5 py-2.5">
+          <AnimatePresence initial={false} mode="sync">
+            <motion.span key={foodImages[menuImageIndex]} className="absolute inset-0" initial={{ opacity: 0, scale: 1.04 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.1, ease: 'easeInOut' }} aria-hidden>
+              <Image src={foodImages[menuImageIndex]} alt="" fill className="object-cover" sizes="(max-width: 640px) 100vw, 480px" priority={menuImageIndex === 0} />
+            </motion.span>
+          </AnimatePresence>
+          <span className="absolute inset-0 bg-[linear-gradient(90deg,rgba(12,22,16,.88)_0%,rgba(18,47,32,.72)_45%,rgba(18,47,32,.30)_100%)]" aria-hidden />
+          <span className="relative z-10 grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-[15px] bg-white shadow-[0_7px_18px_rgba(0,0,0,.24)] ring-1 ring-white/80">
+            <Image src="/menu-icon.png" alt="" aria-hidden width={25} height={25} className="h-[25px] w-[25px] object-contain" />
+          </span>
+          <span className="relative z-10 ml-3 min-w-0 flex-1 text-left">
+            <strong className="block truncate text-base font-black text-white [text-shadow:0_2px_8px_rgba(0,0,0,.45)]">View Menu</strong>
+            <span className="mt-0.5 block truncate text-[10px] font-semibold text-white/85">Mango favourites • dine in or pickup</span>
+          </span>
+          <span className="relative z-10 ml-2 flex shrink-0 -space-x-2" aria-hidden>
+            {menuThumbs.map((src, index) => <motion.span key={src} className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-white/95 bg-white shadow-[0_6px_15px_rgba(0,0,0,.28)]" animate={{ y: index === menuImageIndex ? -3 : 0, scale: index === menuImageIndex ? 1.05 : 1 }} transition={{ duration: .45 }}><Image src={src} alt="" fill className="object-cover" sizes="36px" /></motion.span>)}
+          </span>
+        </span>
+      </Link>
+
+      <div className="grid grid-cols-2 gap-2">
+        {shopConfig.social.zomato && <a href={shopConfig.social.zomato} target="_blank" rel="noreferrer" className={`${pill} bg-[#E23744] shadow-[0_8px_18px_rgba(226,55,68,.30),0_3px_8px_rgba(21,21,21,.10)]`}><Image src="/Zomato_Logo_1.png" alt="Zomato" width={104} height={28} className="h-7 w-auto object-contain" /></a>}
+        {shopConfig.social.swiggy && <a href={shopConfig.social.swiggy} target="_blank" rel="noreferrer" className={`${pill} border border-white/20 bg-[#FF5D0D] shadow-[0_8px_18px_rgba(255,93,13,.26),0_3px_8px_rgba(21,21,21,.08),inset_0_1px_0_rgba(255,255,255,.14)]`}><span className="pointer-events-none absolute inset-x-4 top-0 h-[36%] rounded-full bg-gradient-to-b from-white/12 to-transparent" aria-hidden /><Image src="/swiggy-symbol.png" alt="Swiggy" width={120} height={35} className="relative z-10 h-[25px] w-auto object-contain brightness-0 invert drop-shadow-[0_1px_2px_rgba(0,0,0,.16)]" /></a>}
+      </div>
+
+      {/* Payments + Instagram follow Burger's row order and compact button treatment */}
+      <div className="grid grid-cols-2 gap-2">
+        {onOpenPayments && <button type="button" onClick={onOpenPayments} className={`${pill} gap-2 border border-white/15 bg-gradient-to-br from-[#1B918C] via-[#0F766E] to-[#075E58] px-2 text-white shadow-[0_9px_22px_rgba(15,118,110,.30),0_3px_8px_rgba(21,21,21,.08),inset_0_1px_0_rgba(255,255,255,.14)]`}><span className="pointer-events-none absolute inset-x-4 top-0 h-[36%] rounded-full bg-gradient-to-b from-white/12 to-transparent" aria-hidden /><Image src="/icons8-bhim-48.png" alt="" width={20} height={20} className="relative z-10 h-5 w-5 shrink-0 object-contain brightness-0 invert" /><span className="relative z-10 truncate text-sm font-bold">Payment</span></button>}
+        {shopConfig.social.instagram && <a href={shopConfig.social.instagram} target="_blank" rel="noreferrer" className={`${pill} gap-2 border border-[#F1D7E3] bg-[linear-gradient(115deg,#FFFFFF_0%,#FFF9FC_58%,#FCEBF4_100%)] px-2 shadow-[0_8px_18px_rgba(225,48,108,.14),0_4px_9px_rgba(98,40,215,.07),inset_0_1px_0_rgba(255,255,255,.95)]`}><span className="pointer-events-none absolute -right-5 -top-6 h-16 w-20 rounded-full bg-[#E1306C]/15 blur-xl" aria-hidden /><span className="pointer-events-none absolute -bottom-7 left-4 h-14 w-20 rounded-full bg-[#833AB4]/10 blur-xl" aria-hidden /><Image src="/instagram-official.png" alt="Instagram" width={22} height={22} className="relative z-10 h-[21px] w-[21px] shrink-0 object-contain" /><span className="relative z-10 truncate bg-[linear-gradient(90deg,#F58529_0%,#DD2A7B_48%,#8134AF_100%)] bg-clip-text py-0.5 text-sm font-extrabold text-transparent">Instagram</span></a>}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <Link
+          href="/reviews"
+          className="relative flex h-11 w-full min-w-0 items-center justify-center gap-2 overflow-hidden rounded-2xl border border-white/80 px-2 transition-all active:scale-[0.97] touch-manipulation hover:brightness-[1.02]"
+          style={{
+            background: 'linear-gradient(112deg, #AECBFA 0%, #C6DAFC 22%, #F6AEA6 43%, #FDE293 68%, #A8DAB5 100%)',
+            boxShadow: '0 8px 18px rgba(66,133,244,0.20), 0 4px 10px rgba(234,67,53,0.14), inset 0 1px 0 rgba(255,255,255,0.72)',
+            transform: 'translateY(-1px)',
+          }}
+        >
+          <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(255,255,255,.42),transparent_47%),linear-gradient(180deg,rgba(255,255,255,.20),transparent_52%)]" aria-hidden />
+          <span className="pointer-events-none absolute inset-0 flex items-center justify-around px-2 opacity-[.28]" aria-hidden>
+            {[1, 2, 3, 4, 5].map((star) => <Star key={star} className="h-6 w-6 shrink-0 fill-[#FBBC05] text-[#F4A900]" strokeWidth={1.5} />)}
+          </span>
+          <GoogleGIcon className="relative z-10 h-[18px] w-[18px] shrink-0" />
+          <span className="relative z-10 text-sm font-bold text-[#151515]">Reviews</span>
+        </Link>
+        <a href={mapUrl} target="_blank" rel="noreferrer" className={`${pill} w-full gap-2 border border-white/80 bg-[linear-gradient(115deg,#EAF1E9_0%,#DDEBDF_48%,#CBE1D0_100%)] px-2 shadow-[0_8px_18px_rgba(52,168,83,.16),0_4px_9px_rgba(21,21,21,.07),inset_0_1px_0_rgba(255,255,255,.82)]`}>
+          <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[.14]" viewBox="0 0 180 44" preserveAspectRatio="none" aria-hidden><path d="M-8 34C22 12 42 15 66 28s43 10 62-3 36-14 60-7" fill="none" stroke="#34A853" strokeWidth="2.1"/><path d="M19-5c8 15 8 28-1 50M92-4c-8 15-5 29 11 49M151-4c-5 12-3 25 8 49" fill="none" stroke="#4285F4" strokeWidth="1.5" strokeDasharray="4 4"/><path d="M-5 11c30 7 53 5 76-5s45-6 63 5 35 11 53 2" fill="none" stroke="#FBBC05" strokeWidth="1.6"/></svg>
+          <span className="relative z-10 grid h-6 w-6 shrink-0 place-items-center" aria-hidden><svg viewBox="0 0 24 24" className="h-[21px] w-[21px]"><path d="m2.8 6.1 5.1-2.4v15.9L2.8 22V6.1Z" fill="#34A853"/><path d="m7.9 3.7 6 2.1v15.9l-6-2.1V3.7Z" fill="#FBBC05"/><path d="m13.9 5.8 7.3-2.7V19l-7.3 2.7V5.8Z" fill="#4285F4"/><path d="M16.6 2.2a4.3 4.3 0 0 0-4.3 4.3c0 3.2 4.3 7.8 4.3 7.8s4.3-4.6 4.3-7.8a4.3 4.3 0 0 0-4.3-4.3Z" fill="#EA4335"/><circle cx="16.6" cy="6.5" r="1.65" fill="white"/></svg></span>
+          <span className="relative z-10 truncate text-sm font-bold text-[#184D3B]">Location</span>
+        </a>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <button type="button" onClick={saveContact} className="relative flex h-11 w-full min-w-0 items-center justify-center gap-2 overflow-hidden rounded-2xl border-2 border-[#184D3B] bg-[#EAF1E9] px-2 text-[#184D3B] shadow-[0_8px_18px_rgba(24,77,59,.14),0_4px_8px_rgba(21,21,21,.08),inset_0_1px_0_rgba(255,255,255,.85)] transition active:scale-[.97]">
+          <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-[#184D3B]/[.10] to-transparent animate-[shimmer_2s_infinite]" />
+          <span className="relative z-10 flex items-center justify-center gap-2"><Download className="h-4 w-4 shrink-0" /><span className="truncate text-sm font-bold">Save Contact</span></span>
+        </button>
+        <Link href="/gallery" onClick={() => sessionStorage.setItem('fromGallery', 'true')} className="relative flex h-11 w-full min-w-0 items-center justify-center gap-2 overflow-hidden rounded-2xl border-2 border-[#184D3B] bg-[#EAF1E9] px-2 text-[#184D3B] shadow-[0_8px_18px_rgba(24,77,59,.14),0_4px_8px_rgba(21,21,21,.08),inset_0_1px_0_rgba(255,255,255,.85)] transition active:scale-[.97]">
+          <span className="relative z-10 flex shrink-0 items-center -space-x-1.5" aria-hidden>
+            <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-[#7A9D55] bg-white shadow-sm"><Image src="/gallery/unnamed%20(2).webp" alt="" fill className="object-cover" sizes="28px" /></span>
+            <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-[#7A9D55] bg-white shadow-sm"><Image src="/gallery/unnamed%20(4).webp" alt="" fill className="object-cover" sizes="28px" /></span>
+          </span>
+          <span className="relative z-10 truncate text-sm font-bold">Gallery</span>
+        </Link>
+      </div>
+    </div>
+    <OrderTypeSheet open={orderOpen} onClose={() => setOrderOpen(false)} options={['dine-in', 'takeaway']} />
+  </>
 })
 
 ActionsRow.displayName = 'ActionsRow'
-
 export default ActionsRow

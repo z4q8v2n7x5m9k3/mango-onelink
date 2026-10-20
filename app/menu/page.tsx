@@ -2,10 +2,10 @@
 
 import { useState, useEffect, Suspense, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Link from 'next/link'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Moon, Sun, ChevronsLeftRight, ShoppingCart, Plus, Minus, Check, List, X, ChevronDown, ChevronUp } from 'lucide-react'
+import { ArrowLeft, Moon, Sun, ShoppingCart, ShoppingBag, Plus, Minus, Check, List, X, ChevronDown, ChevronUp, FileText, ArrowUpRight } from 'lucide-react'
 import { menuCategories, type CartItem, type MenuItem } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
@@ -48,8 +48,6 @@ const categoryKeys: MenuCategoryKey[] = [
   'iceCream',
 ]
 
-// PDF menu in public – opens in phone preview / browser
-const MENU_PDF_URL = '/mango%20menu%2018-04-2026.pdf'
 const defaultOrderMessage = "Hi Mango, I'd like to order from the menu. Please share today's availability and rates."
 
 /** Document scroll — same pattern as /reviews (no nested 100dvh scroller; avoids mobile “half cut” viewport). */
@@ -69,13 +67,12 @@ function MenuPageInner() {
   const typeParam = searchParams.get('type')
   const isOrderMode = mode === 'order'
   const orderType: MangoOrderType =
-    typeParam === 'dine-in' || typeParam === 'takeaway' ? typeParam : 'online'
+    typeParam === 'dine-in' || typeParam === 'takeaway' ? typeParam : 'takeaway'
   const orderTitle =
-    orderType === 'dine-in' ? 'Dine In Order' : orderType === 'takeaway' ? 'Takeaway Order' : 'Order Online'
+    orderType === 'dine-in' ? 'Dine In Order' : 'Pickup Order'
   const initialCat = (catParam && categoryKeys.includes(catParam)) ? catParam : 'pizza'
   const [activeCategory, setActiveCategory] = useState<MenuCategoryKey>(initialCat)
   const [isLightMode, setIsLightMode] = useState(true)
-  const [showSlideHint, setShowSlideHint] = useState(false)
   const [cart, setCart] = useState<CartItem[]>([])
   const [lastAddedItemId, setLastAddedItemId] = useState<string | null>(null)
   const [cartBarPulse, setCartBarPulse] = useState(false)
@@ -150,19 +147,6 @@ function MenuPageInner() {
     }
     el.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' })
   }, [activeCategory])
-
-  // Hint: show when user lands on menu page → auto-remove after 1 sec (or on scroll); next visit = show again
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    setShowSlideHint(true)
-    const hideAfter = setTimeout(() => setShowSlideHint(false), 1500)
-    const onScroll = () => setShowSlideHint(false)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => {
-      clearTimeout(hideAfter)
-      window.removeEventListener('scroll', onScroll)
-    }
-  }, [])
 
   const currentCategory = menuCategories[activeCategory]
   const currentItemCount = currentCategory.items.length
@@ -318,8 +302,9 @@ function MenuPageInner() {
               <div className="flex items-center justify-between relative">
                 <Link
                   href="/"
-                  className={`z-10 inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition-colors active:scale-95 ${
-                    isLightMode ? 'hover:bg-slate-100' : 'hover:bg-white/5'
+                  aria-label="Back to Mango"
+                  className={`z-10 inline-flex h-11 w-11 items-center justify-center rounded-[15px] border shadow-[0_5px_14px_rgba(24,77,59,.12)] transition active:scale-95 ${
+                    isLightMode ? 'border-[#D9AD49]/40 bg-[#184D3B] hover:bg-[#7A9D55]' : 'border-white/15 bg-white/10 hover:bg-white/15'
                   }`}
                   onClick={() => {
                     if (typeof window !== 'undefined') {
@@ -327,7 +312,7 @@ function MenuPageInner() {
                     }
                   }}
                 >
-                  <ArrowLeft className={`w-5 h-5 ${isLightMode ? 'text-slate-900' : 'text-white'}`} />
+                  <ArrowLeft className="h-5 w-5 text-white" strokeWidth={2.5} />
                 </Link>
                 <h1
                   className={`absolute left-0 right-0 text-center pointer-events-none px-12 ${
@@ -379,23 +364,14 @@ function MenuPageInner() {
                 )}
               </div>
 
-              {!isOrderMode && <div className="mt-4">
-                <a
-                  href={MENU_PDF_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center justify-center gap-2 w-full py-3 px-4 rounded-2xl font-medium text-sm transition-colors border ${
-                    isLightMode
-                      ? 'bg-slate-900 text-white border-slate-900/10 hover:bg-slate-800 shadow-[0_16px_30px_rgba(15,23,42,0.14)]'
-                      : 'bg-white/[0.08] text-white border-white/[0.1] hover:bg-white/[0.12] shadow-[0_18px_34px_rgba(0,0,0,0.28)]'
-                  }`}
-                >
-                  <ShoppingCart className="w-4 h-4 shrink-0" />
-                  View PDF Menu
-                </a>
-              </div>}
-
-              <div className="mt-4">
+              <div className="mt-3">
+                {!isOrderMode && (
+                <a href="/mango%20menu%2018-04-2026.pdf" target="_blank" rel="noopener noreferrer" className={`group mb-3 flex min-h-[62px] w-full items-center justify-between gap-3 overflow-hidden rounded-[19px] border px-3.5 transition-all ${isLightMode ? 'border-[#D9AD49]/45 bg-[#FFFDF7] text-slate-900 shadow-[0_8px_20px_rgba(24,77,59,.08)] hover:border-[#184D3B]/45' : 'border-white/10 bg-white/[.07] text-white shadow-[0_12px_28px_rgba(0,0,0,.25)] hover:bg-white/[.1]'}`}>
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[13px] bg-[#184D3B] text-white shadow-[0_7px_15px_rgba(24,77,59,.2)]"><FileText className="h-[18px] w-[18px]" strokeWidth={2.4} /></span>
+                    <span className="min-w-0 flex-1 text-left"><span className="block text-[13px] font-extrabold">View PDF Menu</span><span className={`mt-0.5 block text-[10px] font-semibold ${isLightMode ? 'text-slate-500' : 'text-white/65'}`}>Full menu · opens in a new tab</span></span>
+                    <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-full ${isLightMode ? 'bg-[#EAF1E9] text-[#184D3B]' : 'bg-white/10 text-white'}`}><ArrowUpRight className="h-4 w-4" /></span>
+                  </a>
+                )}
                 {isOrderMode && (
                   <button
                     type="button"
@@ -403,46 +379,17 @@ function MenuPageInner() {
                     className="mb-3 flex w-full items-center justify-between rounded-2xl border border-[#E9DDAF] bg-white px-3.5 py-3 text-left shadow-[0_10px_22px_rgba(30,77,61,0.08)] transition-all hover:border-[#1E4D3D]/35 active:scale-[0.99]"
                   >
                     <span>
-                      <span className="block text-[11px] font-extrabold uppercase tracking-wide text-[#1E4D3D]">Change Order Type</span>
+                      <span className="block text-[11px] font-extrabold uppercase tracking-wide text-[#1E4D3D]">Order Mode</span>
                       <span className="mt-0.5 block text-sm font-bold text-slate-900">
-                        {orderType === 'dine-in' ? 'Dine In' : orderType === 'takeaway' ? 'Takeaway' : 'Order Online'}
+                        {orderType === 'dine-in' ? 'Dine In' : 'Pickup'}
                       </span>
                     </span>
                     <ChevronDown className="h-5 w-5 text-slate-500" />
                   </button>
                 )}
-                <AnimatePresence>
-                  {!isOrderMode && showSlideHint && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.25 }}
-                      className="flex items-center justify-center gap-2 mb-3 py-2 px-3 rounded-xl text-sm font-medium"
-                      style={{
-                        background: isLightMode ? 'rgba(30, 77, 61, 0.08)' : 'rgba(255,255,255,0.08)',
-                        border: `1px solid ${isLightMode ? 'rgba(30, 77, 61, 0.2)' : 'rgba(255,255,255,0.15)'}`,
-                        color: isLightMode ? '#1E4D3D' : 'rgba(255,255,255,0.95)',
-                      }}
-                    >
-                      <ChevronsLeftRight className="w-4 h-4 shrink-0" aria-hidden />
-                      <span>Slide to view categories</span>
-                      <ChevronsLeftRight className="w-4 h-4 shrink-0" aria-hidden />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
                 {!isOrderMode && (
-                  <p className={`mb-2.5 px-0.5 text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-600' : 'text-white/70'}`}>
-                    Browse Categories
-                  </p>
-                )}
-                {isOrderMode && (
-                  <p className={`mb-2.5 px-0.5 text-[11px] font-semibold uppercase tracking-wide ${isLightMode ? 'text-slate-600' : 'text-white/70'}`}>
-                    Browse filters
-                  </p>
-                )}
-                {!isOrderMode && (
-                <div ref={categoryScrollerRef} className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5 scroll-px-3">
+                <div>
+                <div ref={categoryScrollerRef} className="flex min-w-0 gap-2.5 overflow-x-auto scrollbar-hide py-1 pl-0.5 pr-6" style={{ WebkitMaskImage: 'linear-gradient(to right,#000 0%,#000 calc(100% - 28px),transparent 100%)', maskImage: 'linear-gradient(to right,#000 0%,#000 calc(100% - 28px),transparent 100%)' }}>
                   {categoryKeys.map((key) => {
                     const cat = menuCategories[key]
                     const isActive = activeCategory === key
@@ -452,25 +399,18 @@ function MenuPageInner() {
                         ref={(el) => { categoryRefs.current[key] = el }}
                         onClick={() => setActiveCategory(key)}
                         whileTap={{ scale: 0.97 }}
-                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-semibold whitespace-nowrap shrink-0 text-[13px] leading-tight transition-all border ${
+                        className={`relative flex h-11 shrink-0 items-center gap-2 rounded-[15px] border px-2 pr-3 text-left text-[12px] font-extrabold shadow-sm transition ${
                           isActive
-                            ? 'bg-mango-green text-white border-mango-green shadow-[0_8px_18px_rgba(30,77,61,0.28)] ring-1 ring-mango-green/30'
-                            : isLightMode
-                              ? 'bg-white text-slate-800 border-slate-200/95 shadow-[0_4px_14px_rgba(15,23,42,0.08)] hover:border-slate-300 hover:shadow-[0_6px_16px_rgba(15,23,42,0.1)]'
-                              : 'bg-white/[0.08] text-white/92 border-white/[0.14] hover:bg-white/[0.12] shadow-[0_6px_18px_rgba(0,0,0,0.35)]'
+                            ? 'border-[#184D3B] bg-[#184D3B] text-white shadow-[0_8px_18px_rgba(24,77,59,.2)]'
+                            : 'border-[#D9AD49]/35 bg-[#FFFDF7] text-slate-700 hover:border-[#184D3B]/45 hover:bg-[#EAF1E9]'
                         }`}
                       >
-                        <span
-                          className={`relative h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full ring-1 ${
-                            isLightMode ? 'ring-black/10' : 'ring-white/25'
-                          }`}
-                        >
-                          <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="26px" unoptimized />
-                        </span>
-                        <span className="leading-tight">{cat.name}</span>
+                        <span className={`relative h-8 w-8 shrink-0 overflow-hidden rounded-[11px] ${isActive ? 'ring-1 ring-white/35' : 'ring-1 ring-[#D9AD49]/45'}`}><Image src={cat.image} alt="" fill className="object-cover" sizes="32px" unoptimized /></span>
+                        <span className="whitespace-nowrap">{cat.name}</span>
                       </motion.button>
                     )
                   })}
+                </div>
                 </div>
                 )}
                 {isOrderMode && (
@@ -502,9 +442,6 @@ function MenuPageInner() {
                         </button>
                       ))}
                     </div>
-                    <p className="mb-2.5 mt-4 px-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-600">
-                      Browse Categories
-                    </p>
                     <div ref={categoryScrollerRef} className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5 scroll-px-3">
                       {categoryKeys.map((key) => {
                         const cat = menuCategories[key]
@@ -516,15 +453,13 @@ function MenuPageInner() {
                             type="button"
                             onClick={() => jumpToOrderCategory(key)}
                             whileTap={{ scale: 0.97 }}
-                            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full font-semibold whitespace-nowrap shrink-0 text-[13px] leading-tight transition-all border ${
+                            className={`flex h-11 items-center gap-2 rounded-[15px] border px-2 pr-3 text-[12px] font-extrabold whitespace-nowrap shrink-0 transition-all ${
                               isActive
-                                ? 'bg-mango-green text-white border-mango-green shadow-[0_8px_18px_rgba(30,77,61,0.28)] ring-1 ring-mango-green/30'
-                                : 'bg-white text-slate-800 border-slate-200/95 shadow-[0_4px_14px_rgba(15,23,42,0.08)] hover:border-slate-300 hover:shadow-[0_6px_16px_rgba(15,23,42,0.1)]'
+                                ? 'bg-[#184D3B] text-white border-[#184D3B] shadow-[0_8px_18px_rgba(24,77,59,.22)]'
+                                : 'bg-[#FFFDF7] text-slate-800 border-[#D9AD49]/35 shadow-[0_4px_14px_rgba(15,23,42,.08)] hover:border-[#184D3B]/45 hover:bg-[#EAF1E9]'
                             }`}
                           >
-                            <span className="relative h-[26px] w-[26px] shrink-0 overflow-hidden rounded-full ring-1 ring-black/10">
-                              <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="26px" unoptimized />
-                            </span>
+                            <span className={`relative h-8 w-8 shrink-0 overflow-hidden rounded-[11px] ${isActive ? 'ring-1 ring-white/35' : 'ring-1 ring-[#D9AD49]/45'}`}><Image src={cat.image} alt="" fill className="object-cover" sizes="32px" unoptimized /></span>
                             <span className="leading-tight">{cat.name}</span>
                           </motion.button>
                         )
@@ -539,35 +474,19 @@ function MenuPageInner() {
 
         <div className="relative z-10">
           {!isOrderMode && (
-            <div className="w-full max-w-md mx-auto px-2 sm:px-3 pt-3 pb-2">
+            <div className="w-full max-w-md mx-auto px-2 sm:px-3 pt-4 pb-1">
               <motion.div
                 key={activeCategory}
                 initial={{ opacity: 0.96 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.18, ease: 'easeOut' }}
-                className={`flex items-center gap-3 rounded-2xl border px-3 py-2.5 ${
-                  isLightMode
-                    ? 'border-slate-200/90 bg-slate-50/90'
-                    : 'border-white/[0.1] bg-white/[0.06]'
-                }`}
+                className="relative min-h-[96px] overflow-hidden rounded-[22px] border border-[#E8E2D2] bg-white px-4 py-4 shadow-[0_8px_22px_rgba(15,23,42,.065)]"
               >
-                <span
-                  className={`relative h-10 w-10 shrink-0 overflow-hidden rounded-xl ring-1 ${
-                    isLightMode ? 'bg-white/90 ring-black/10' : 'bg-white/10 ring-white/25'
-                  }`}
-                >
-                  <Image src={currentCategory.image} alt="" fill className="object-cover" sizes="40px" unoptimized />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className={`truncate text-[15px] font-semibold tracking-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>
-                    {currentCategory.name}
-                  </p>
-                  <p className={`mt-0.5 text-[12px] ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>
-                    {currentItemCount} {currentItemCount === 1 ? 'item' : 'items'}
-                    <span className="mx-1.5 opacity-40">·</span>
-                    Pure veg
-                  </p>
+                <div className="relative min-w-0">
+                  <p className="mt-1 truncate text-[23px] font-black tracking-tight text-[#193c2d]">{currentCategory.name}</p>
+                  <p className="mt-1 text-[12px] font-semibold text-slate-500">{currentItemCount} {currentItemCount === 1 ? 'item' : 'items'} · Vegetarian</p>
                 </div>
+                <span className="absolute right-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[#1E4D3D]/15 bg-[#F3F7F2] text-[12px] font-black text-[#1E4D3D]">{currentItemCount}</span>
               </motion.div>
             </div>
           )}
@@ -617,9 +536,6 @@ function MenuPageInner() {
                           isLightMode ? 'bg-slate-50/70 hover:bg-slate-50' : 'bg-white/[0.04] hover:bg-white/[0.07]'
                         }`}
                       >
-                        <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white shadow-[0_8px_18px_rgba(15,23,42,0.12)] ring-1 ring-slate-100">
-                          <Image src={cat.image} alt={cat.name} fill className="object-cover" sizes="56px" unoptimized />
-                        </span>
                         <div className="min-w-0 flex-1">
                           <span className={`block truncate text-[17px] font-extrabold leading-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>
                             {cat.name}
@@ -696,7 +612,7 @@ function MenuPageInner() {
                                       )}
                                       <div className="mt-3 flex justify-end">
                                         {inCartQty > 0 ? (
-                                          <div className={`h-10 min-w-[120px] rounded-xl flex items-center justify-between px-3 transition-transform ${lastAddedItemId === item.id ? 'scale-[1.03]' : ''}`} style={{ background: '#F25269', color: '#FFFFFF' }}>
+                                          <div className={`h-10 min-w-[120px] rounded-xl flex items-center justify-between px-3 transition-transform ${lastAddedItemId === item.id ? 'scale-[1.03]' : ''}`} style={{ background: '#215941', color: '#FFFFFF' }}>
                                             <button type="button" onClick={() => updateCartQuantity(item.id, inCartQty - 1)} className="w-6 h-6 rounded-full flex items-center justify-center text-white">
                                               <Minus className="w-4 h-4" />
                                             </button>
@@ -714,13 +630,13 @@ function MenuPageInner() {
                                             transition={{ duration: 0.28, ease: 'easeOut' }}
                                             className="relative overflow-hidden h-10 min-w-[120px] rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 border-2"
                                             style={{
-                                              borderColor: '#F25269',
-                                              color: '#F25269',
+                                              borderColor: '#215941',
+                                              color: '#215941',
                                               background: isLightMode ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
                                             }}
                                           >
                                             {lastAddedItemId === item.id && (
-                                              <span className="absolute inset-0 rounded-xl bg-[#F25269]/10 animate-ping" />
+                                              <span className="absolute inset-0 rounded-xl bg-[#215941]/10 animate-ping" />
                                             )}
                                             <span className="relative z-10 inline-flex items-center gap-1.5">
                                               ADD
@@ -750,55 +666,40 @@ function MenuPageInner() {
                   exit={{ opacity: 0, y: -6 }}
                   transition={{ duration: 0.2 }}
                   viewport={{ once: true }}
-                  className="grid grid-cols-2 gap-3 sm:gap-4"
+                  className="grid grid-cols-1 gap-2.5"
                 >
                   {currentCategory.items.map((item, index) => (
                     <motion.div
                       key={item.id}
-                      initial={{ opacity: 0, scale: 0.98 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
+                      initial={{ opacity: 0, y: 8 }}
+                      whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: Math.min(index * 0.02, 0.15) }}
-                      className="group rounded-[24px] overflow-hidden border transition-all duration-300 relative flex flex-col min-h-[148px]"
+                      className="group relative flex min-h-[94px] items-center gap-3 overflow-hidden rounded-[20px] border p-3.5 transition-all duration-300"
                       style={
                         isLightMode
                           ? {
-                              background: 'linear-gradient(145deg, #ffffff 0%, #ffffff 52%, #fcfcfb 100%)',
-                              border: '1px solid rgba(226, 232, 240, 0.95)',
-                              boxShadow: '0 14px 28px rgba(15, 23, 42, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
+                              background: '#FFFFFF',
+                              border: '1px solid #E8E2D2',
+                              boxShadow: '0 8px 22px rgba(15,23,42,.065)',
                             }
                           : {
-                              background: 'linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.04))',
-                              border: '1px solid rgba(255,255,255,0.08)',
-                              boxShadow: '0 18px 48px rgba(0,0,0,0.55)',
+                              background: 'linear-gradient(180deg,rgba(255,255,255,.085),rgba(255,255,255,.04))',
+                              border: '1px solid rgba(233,196,106,.18)',
+                              boxShadow: '0 14px 34px rgba(0,0,0,.42)',
                             }
                       }
                     >
-                      <div className="p-4 flex flex-col flex-1 min-h-0 gap-0 relative z-10">
-                        <div className="flex items-center justify-between gap-2 shrink-0 flex-wrap">
-                          <span
-                            className={`rounded-full px-2.5 py-1 text-[10px] font-semibold border tracking-wide shrink-0 ${isLightMode ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/15 text-emerald-200 border-emerald-300/50'}`}
-                          >
-                            Veg
-                          </span>
-                          <span
-                            className={`rounded-full px-2.5 py-1 text-xs font-bold tabular-nums border shadow-sm shrink-0 ${isLightMode ? 'bg-white text-amber-900 border-amber-200 shadow-[0_6px_14px_rgba(15,23,42,0.06)]' : 'bg-black/40 text-amber-100 border-amber-400/50'}`}
-                          >
-                            {item.price}
-                          </span>
+                      <div className="min-w-0 flex-1 py-1 pr-1">
+                        <div className="mb-1 flex items-center gap-1.5">
+                          <span className="h-2 w-2 shrink-0 rounded-[2px] border border-[#16803C] p-[1px]"><span className="block h-full w-full rounded-full bg-[#16803C]" /></span>
+                          <span className={`text-[9px] font-extrabold uppercase tracking-[.11em] ${isLightMode ? 'text-[#16803C]' : 'text-emerald-300'}`}>Veg</span>
+                          {item.quantity && item.quantity !== '1 portion' && <span className={`truncate text-[10px] font-medium ${isLightMode ? 'text-slate-400' : 'text-white/45'}`}>· {item.quantity}</span>}
                         </div>
-                        <h3
-                          className={`text-[14px] sm:text-[15px] font-bold leading-snug line-clamp-3 flex-1 min-h-0 mt-3 overflow-hidden break-words ${isLightMode ? 'text-slate-900' : 'text-white/95'}`}
-                        >
-                          {item.name}
-                        </h3>
-                        {item.description && (
-                          <p className={`mt-1 line-clamp-2 text-[10px] leading-snug ${isLightMode ? 'text-slate-500' : 'text-white/50'}`}>{item.description}</p>
-                        )}
-                        {item.quantity && item.quantity !== '1 portion' && (
-                          <p className={`text-[11px] mt-1.5 truncate shrink-0 font-medium ${isLightMode ? 'text-slate-600' : 'text-white/55'}`}>{item.quantity}</p>
-                        )}
+                        <h3 className={`line-clamp-2 text-[14px] font-extrabold leading-snug ${isLightMode ? 'text-slate-900' : 'text-white/95'}`}>{item.name}</h3>
+                        {item.description && <p className={`mt-1 line-clamp-1 text-[11px] font-medium leading-snug ${isLightMode ? 'text-slate-500' : 'text-white/55'}`}>{item.description}</p>}
                       </div>
+                      <span className={`shrink-0 rounded-xl border px-2.5 py-1.5 text-[13px] font-black tabular-nums ${isLightMode ? 'border-[#1E4D3D]/15 bg-[#F3F7F2] text-[#1E4D3D]' : 'border-[#E9C46A]/20 bg-black/25 text-[#F2D48E]'}`}>{item.price}</span>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -859,10 +760,10 @@ function MenuPageInner() {
                       }}
                       className="w-full px-4 py-3.5 text-left flex items-center justify-between border-b border-slate-100/90 last:border-b-0"
                     >
-                      <span className={`text-[16px] font-semibold ${isActive ? 'text-[#E23744]' : 'text-slate-800'}`}>
+                      <span className={`text-[16px] font-semibold ${isActive ? 'text-[#215941]' : 'text-slate-800'}`}>
                         {cat.name}
                       </span>
-                      <span className={`text-[15px] font-semibold ${isActive ? 'text-[#E23744]' : 'text-slate-500'}`}>
+                      <span className={`text-[15px] font-semibold ${isActive ? 'text-[#215941]' : 'text-slate-500'}`}>
                         {cat.items.length}
                       </span>
                     </button>
@@ -893,17 +794,10 @@ function MenuPageInner() {
                   animate={cartBarPulse ? { scale: [1, 1.02, 1] } : { scale: 1 }}
                   transition={{ duration: 0.28, ease: 'easeOut' }}
                   className="pointer-events-auto w-full max-w-[430px] h-[60px] rounded-full text-white shadow-[0_14px_28px_rgba(226,55,68,0.32)] flex items-center justify-between px-4 border border-white/20"
-                  style={{ background: '#F25269' }}
+                  style={{ background: '#215941' }}
                 >
                   <span className="flex items-center gap-2.5">
-                    <span className="flex items-center -space-x-2">
-                      <span className="w-7 h-7 rounded-full border border-white/80 overflow-hidden bg-white">
-                        <Image src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=120&q=60" alt="Food 1" width={28} height={28} className="w-full h-full object-cover" unoptimized />
-                      </span>
-                      <span className="w-7 h-7 rounded-full border border-white/80 overflow-hidden bg-white">
-                        <Image src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=120&q=60" alt="Food 2" width={28} height={28} className="w-full h-full object-cover" unoptimized />
-                      </span>
-                    </span>
+                    <span className="grid h-9 w-9 place-items-center rounded-full border border-white/35 bg-white/10"><ShoppingBag className="h-4 w-4" /></span>
                     <span className="text-[16px] font-semibold">{getTotalItems()} items added</span>
                   </span>
                   <span className="text-[16px] font-semibold">Checkout &gt;</span>

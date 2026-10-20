@@ -9,6 +9,7 @@ import { shopConfig, ContactPerson } from '../config'
 import ActionsRow, { ActionsRowRef } from './ActionsRow'
 import Card3D, { Face } from '../../../components/Card3D'
 import PaymentFace from './PaymentFace'
+import BusinessHoursBadge from './BusinessHoursBadge'
 import { useLanguage } from '../../../contexts/LanguageContext'
 
 export default function Hero() {
@@ -112,9 +113,9 @@ export default function Hero() {
           <div 
           className="rounded-[24px] shadow-2xl relative cursor-pointer overflow-hidden"
           style={{
-            background: 'linear-gradient(165deg, #FBEC89 0%, #FDF8E0 18%, #ffffff 45%, #FEFDF5 70%, #ffffff 100%)',
-            border: '1px solid rgba(251, 236, 137, 0.45)',
-            boxShadow: '0 22px 60px rgba(251, 236, 137, 0.16), 0 10px 28px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
+            background: 'linear-gradient(165deg, #D9AD49 0%, #FFFDF7 18%, #ffffff 45%, #FFFDF7 70%, #ffffff 100%)',
+            border: '1px solid rgba(217, 173, 73, 0.45)',
+            boxShadow: '0 22px 60px rgba(217, 173, 73, 0.16), 0 10px 28px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.92)',
             minHeight: '580px',
             boxSizing: 'border-box'
           }}
@@ -270,7 +271,7 @@ export default function Hero() {
               }}
             >
               <div className="absolute inset-x-6 top-2 h-10 rounded-full bg-white/70 blur-2xl pointer-events-none" />
-              {/* Logo Circle - subtle float animation, no glow */}
+              {/* Existing circular Mango profile logo */}
               <motion.div
                 className="absolute -top-14 left-6"
                 initial={{ scale: 0.92, opacity: 0 }}
@@ -312,17 +313,19 @@ export default function Hero() {
                   {shopConfig.tagline}
                 </p>
                 {'keywordBadges' in shopConfig && Array.isArray(shopConfig.keywordBadges) && (
-                  <div className="flex flex-wrap gap-1.5 mb-5">
+                  <div className="relative mb-2 flex flex-nowrap gap-2 overflow-hidden py-0.5 whitespace-nowrap">
                     {shopConfig.keywordBadges.map((badge: string) => (
                       <span
                         key={badge}
-                        className="inline-flex px-2.5 py-1 rounded-full bg-mango-lightGreen border border-mango-green/20 text-mango-green text-xs font-medium"
+                        className="relative z-10 inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#D9AD49]/45 bg-[#FFFDF7] py-1 pl-1 pr-2.5 text-[10px] font-semibold leading-none text-[#184D3B] shadow-[0_2px_7px_rgba(24,77,59,.08)]"
                       >
+                        <Image src={badge.includes('Google') ? '/gallery/unnamed.webp' : '/gallery/unnamed%20(2).webp'} alt="" aria-hidden width={18} height={18} className="h-[18px] w-[18px] shrink-0 rounded-full object-cover ring-1 ring-[#D9AD49]/60" />
                         {badge}
                       </span>
                     ))}
                   </div>
                 )}
+                <BusinessHoursBadge />
               </motion.div>
 
               {/* Actions - smooth appear after card */}
@@ -407,9 +410,9 @@ export default function Hero() {
                 </h2>
 
                 {/* Block 1: Location */}
-                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(251, 236, 137, 0.4)' }}>
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #1E4D3D 0%, #2F6B55 100%)' }}>
-                    <MapPin className="w-5 h-5 text-[#FBEC89]" />
+                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,253,247,0.9) 100%)', borderColor: 'rgba(217, 173, 73, 0.4)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #184D3B 0%, #7A9D55 100%)' }}>
+                    <MapPin className="w-5 h-5 text-[#D9AD49]" />
                   </div>
                   <div className="min-w-0 flex-1 text-left">
                     <p className="text-sm font-bold leading-snug text-slate-900">Location</p>
@@ -418,9 +421,9 @@ export default function Hero() {
                 </div>
 
                 {/* Block 2: Services */}
-                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(251, 236, 137, 0.4)' }}>
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #1E4D3D 0%, #2F6B55 100%)' }}>
-                    <Store className="w-5 h-5 text-[#FBEC89]" />
+                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,253,247,0.9) 100%)', borderColor: 'rgba(217, 173, 73, 0.4)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #184D3B 0%, #7A9D55 100%)' }}>
+                    <Store className="w-5 h-5 text-[#D9AD49]" />
                   </div>
                   <div className="min-w-0 flex-1 text-left">
                     <p className="text-sm font-bold leading-snug text-slate-900">Services</p>
@@ -429,9 +432,9 @@ export default function Hero() {
                 </div>
 
                 {/* Block 3: Timings */}
-                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,248,223,0.9) 100%)', borderColor: 'rgba(251, 236, 137, 0.4)' }}>
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #1E4D3D 0%, #2F6B55 100%)' }}>
-                    <Clock className="w-5 h-5 text-[#FBEC89]" />
+                <div className="flex items-start gap-3 w-full mb-3 rounded-[22px] p-3.5 sm:p-4 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(255,253,247,0.9) 100%)', borderColor: 'rgba(217, 173, 73, 0.4)' }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_8px_18px_rgba(30,77,61,0.24)]" style={{ background: 'linear-gradient(135deg, #184D3B 0%, #7A9D55 100%)' }}>
+                    <Clock className="w-5 h-5 text-[#D9AD49]" />
                   </div>
                   <div className="min-w-0 flex-1 text-left">
                     <p className="text-sm font-bold leading-snug text-slate-900">Timings</p>
@@ -441,7 +444,7 @@ export default function Hero() {
                 </div>
 
                 {/* Google Map */}
-                <div className="w-full h-28 sm:h-32 rounded-[22px] overflow-hidden mb-4 pointer-events-none flex-shrink-0 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'rgba(255,255,255,0.94)', borderColor: 'rgba(251, 236, 137, 0.35)' }}>
+                <div className="w-full h-28 sm:h-32 rounded-[22px] overflow-hidden mb-4 pointer-events-none flex-shrink-0 border shadow-[0_10px_24px_rgba(0,0,0,0.16)]" style={{ background: 'rgba(255,255,255,0.94)', borderColor: 'rgba(217, 173, 73, 0.35)' }}>
                   <iframe
                     src={`https://www.google.com/maps?q=${encodeURIComponent(shopConfig.contact.mapQuery)}&output=embed`}
                     width="100%"

@@ -1,119 +1,56 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Bike, Clock3, PackageCheck, UtensilsCrossed } from 'lucide-react'
+import { ArrowLeft, ArrowRight, PackageCheck, UtensilsCrossed } from 'lucide-react'
 import { writeOrderType, type MangoOrderType } from '../lib/cart-session'
 
-const dinePickupModes: Array<{
+const orderModes: Array<{
   type: MangoOrderType
   title: string
-  subtitle: string
-  detail: string
+  description: string
+  eyebrow: string
   image: string
-  href: string
-  Icon: typeof Bike
+  Icon: typeof UtensilsCrossed
 }> = [
-  {
-    type: 'dine-in',
-    title: 'Dine In',
-    subtitle: 'Pre-order before you arrive.',
-    detail: 'Food ready for your dine-in visit at Mango.',
-    image: 'url("/unnamed.webp")',
-    href: '/menu?mode=order&type=dine-in',
-    Icon: UtensilsCrossed,
-  },
-  {
-    type: 'takeaway',
-    title: 'Pickup',
-    subtitle: 'Packed and ready to collect.',
-    detail: 'Skip waiting and collect your order from the restaurant.',
-    image: 'url("https://images.unsplash.com/photo-1617347454431-f49d7ff5c3b1?auto=format&fit=crop&w=900&q=80")',
-    href: '/menu?mode=order&type=takeaway',
-    Icon: PackageCheck,
-  },
+  { type: 'dine-in', title: 'Dine In', description: 'Choose your favourites and enjoy them at Mango.', eyebrow: 'A table at Mango', image: '/gallery/unnamed%20(1).webp', Icon: UtensilsCrossed },
+  { type: 'takeaway', title: 'Pickup', description: 'Order ahead and collect your meal fresh.', eyebrow: 'Ready when you are', image: '/gallery/unnamed%20(4).webp', Icon: PackageCheck },
 ]
 
 export default function OrderTypePage() {
   return (
-    <main className="mx-auto min-h-screen w-full max-w-[430px] bg-gradient-to-b from-[#fff9ea] via-white to-[#fff1d2] px-3 pb-10 pt-[max(0.75rem,env(safe-area-inset-top))] text-slate-900">
-      <div className="w-full">
-        <section className="overflow-hidden rounded-[28px] border border-amber-200/80 bg-white shadow-[0_16px_38px_rgba(120,53,15,0.12)]">
-          <div className="p-3">
-            <div className="relative flex items-center justify-between">
-              <Link
-                href="/"
-                className="z-10 inline-flex min-h-[40px] min-w-[40px] items-center justify-center rounded-full bg-slate-50 text-slate-950 transition-colors hover:bg-slate-100 active:scale-95"
-                aria-label="Back"
-              >
-                <ArrowLeft className="h-[18px] w-[18px] text-slate-900" />
-              </Link>
-              <h1 className="absolute left-0 right-0 px-12 text-center text-[20px] font-extrabold tracking-tight text-slate-950">
-                Order Type
-              </h1>
-              <span className="z-10 h-10 w-10" aria-hidden />
-            </div>
+    <main className="mx-auto min-h-screen w-full max-w-[470px] px-4 pb-12 pt-[max(1rem,env(safe-area-inset-top))] text-white">
+      <Link href="/" className="inline-flex h-10 items-center gap-2 rounded-full border border-white/15 bg-white/[0.07] px-4 text-sm font-semibold text-white/90 transition hover:bg-white/[0.12]">
+        <ArrowLeft className="h-4 w-4" /> Back to Mango
+      </Link>
 
-            <p className="mx-auto mt-2 max-w-[290px] px-2 text-center text-[12px] font-semibold leading-5 text-slate-600">
-              Pick dine-in pre-order or packed pickup.
-            </p>
-          </div>
-        </section>
+      <header className="pb-6 pt-8">
+        <p className="text-[11px] font-extrabold uppercase tracking-[.24em] text-[#FBE9A5]">Mango · Bahu Plaza</p>
+        <h1 className="mt-2 text-[36px] font-black leading-[1.02] tracking-[-.04em]">Order Now</h1>
+        <p className="mt-3 max-w-[340px] text-[14px] leading-6 text-white/70">Choose how you’d like to enjoy your favourites.</p>
+      </header>
 
-        <section className="mt-3 grid gap-3">
-          {dinePickupModes.map(({ type, title, subtitle, detail, image, href, Icon }) => (
-            <Link
-              key={type}
-              href={href}
-              onClick={() => writeOrderType(type)}
-              className="group overflow-hidden rounded-[28px] border border-slate-200/90 bg-white shadow-[0_14px_32px_rgba(15,23,42,0.10)] transition-transform active:scale-[0.985]"
-            >
-              <div
-                className="relative h-24 border-b border-white/70 bg-cover bg-center transition-transform duration-300 group-active:scale-[1.02]"
-                style={{ backgroundImage: image }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-transparent" />
-                <div className="absolute bottom-3 left-3 rounded-full bg-white/92 px-3 py-1 text-[11px] font-extrabold text-slate-950 shadow-sm">
-                  {type === 'dine-in' ? 'Dine at Mango' : 'Quick Pickup'}
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3.5">
-                <span
-                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] ring-1 ${
-                    type === 'dine-in'
-                      ? 'bg-amber-50 text-amber-700 ring-amber-200'
-                      : 'bg-teal-50 text-teal-700 ring-teal-200'
-                  }`}
-                >
-                  <Icon className="h-5 w-5" strokeWidth={2.4} />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[17px] font-extrabold leading-tight text-slate-950">{title}</span>
-                  <span className="mt-0.5 block text-[12px] font-bold leading-4 text-slate-600">{subtitle}</span>
-                  <span className="mt-1 block text-[11px] font-medium leading-4 text-slate-500">{detail}</span>
-                </span>
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition-colors group-active:bg-[#fff3f6] group-active:text-[#E23744]">
-                  <ArrowRight className="h-4 w-4" />
-                </span>
-              </div>
-            </Link>
-          ))}
-        </section>
-
-        <section className="mt-3 rounded-[24px] border border-slate-200/90 bg-white/95 p-3 shadow-[0_10px_24px_rgba(15,23,42,0.07)]">
-          <div className="flex items-center gap-2 text-[12px] font-bold text-slate-500">
-            <Clock3 className="h-4 w-4 text-[#215941]" />
-            Want regular delivery instead?
-          </div>
-          <Link
-            href="/menu?mode=order&type=online"
-            onClick={() => writeOrderType('online')}
-            className="mt-2 flex h-11 items-center justify-center gap-2 rounded-full bg-[#215941] px-4 text-[14px] font-extrabold text-white shadow-[0_10px_20px_rgba(33,89,65,0.22)] active:scale-[0.98]"
-          >
-            Switch to Online Order
-            <Bike className="h-4 w-4" strokeWidth={2.35} />
+      <section className="grid gap-3.5" aria-label="Choose order type">
+        {orderModes.map(({ type, title, description, eyebrow, image, Icon }) => (
+          <Link key={type} href={`/menu?mode=order&type=${type}`} onClick={() => writeOrderType(type)} className="group relative isolate min-h-[220px] overflow-hidden rounded-[26px] border border-white/20 bg-[#143b2b] shadow-[0_18px_38px_rgba(0,0,0,.25)] transition duration-300 hover:-translate-y-0.5 active:scale-[.99]">
+            <Image src={image} alt="" fill sizes="(max-width: 470px) 100vw, 470px" className="absolute inset-0 z-0 object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
+            <span className="absolute inset-0 z-0 bg-gradient-to-t from-[#0d2118]/95 via-[#173c2b]/48 to-black/5" />
+            <span className="absolute inset-x-0 bottom-0 z-0 h-1/2 bg-gradient-to-t from-black/35 to-transparent" />
+            <span className="absolute left-4 top-4 z-10 rounded-full border border-white/25 bg-black/25 px-3 py-1 text-[10px] font-bold uppercase tracking-[.16em] text-white backdrop-blur-md">{eyebrow}</span>
+            <span className="absolute bottom-4 left-4 right-4 z-10 flex items-end justify-between gap-3">
+              <span className="min-w-0">
+                <span className="flex items-center gap-2 text-[23px] font-extrabold leading-tight"><Icon className="h-5 w-5 shrink-0 text-[#FBE9A5]" />{title}</span>
+                <span className="mt-1.5 block max-w-[280px] text-[13px] leading-5 text-white/80">{description}</span>
+              </span>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/35 bg-white/15 backdrop-blur-md transition group-hover:translate-x-0.5"><ArrowRight className="h-5 w-5" /></span>
+            </span>
           </Link>
-        </section>
-      </div>
+        ))}
+      </section>
+
+      <Link href="/menu" className="mt-5 flex min-h-[58px] items-center justify-between rounded-[19px] border border-[#FBE9A5]/40 bg-[#FBE9A5] px-5 text-[#183b2c] shadow-[0_12px_26px_rgba(0,0,0,.18)] transition hover:brightness-105 active:scale-[.99]">
+        <span className="text-[15px] font-extrabold">Browse the full menu</span><ArrowRight className="h-5 w-5" />
+      </Link>
     </main>
   )
 }

@@ -2,114 +2,61 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import { siteConfig } from '../data/site'
-import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
+import { Leaf, UtensilsCrossed } from 'lucide-react'
 
 export default function LoadingScreen() {
   return (
     <motion.div
       initial={{ opacity: 1 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] } }}
-      transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
-      style={{
-        background:
-          'linear-gradient(180deg, #0a0a0a 0%, #111111 100%)',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: '100vh',
-        width: '100vw'
-      }}
+      exit={{ opacity: 0, scale: 1.025, transition: { duration: 0.28, ease: 'easeInOut' } }}
+      className="fixed inset-0 z-[9999] flex min-h-[100dvh] items-center justify-center overflow-hidden bg-[#1B211E] px-6"
+      aria-label="Loading Mango"
+      role="status"
     >
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#FBEC89]/8 blur-3xl" />
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
+        <div className="absolute left-1/2 top-[43%] h-[340px] w-[340px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#D9AD49]/[.12] blur-[100px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_43%,rgba(255,253,247,0.07),transparent_48%)]" />
       </div>
 
-      <div className="flex flex-col items-center px-6">
+      <div className="relative flex h-[390px] w-full max-w-[390px] flex-col items-center">
         <motion.div
-          initial={{ opacity: 0, y: 12, scale: 0.96 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.55, ease: [0.22, 0.61, 0.36, 1] }}
-          className="relative mb-6"
+          initial={{ opacity: 0, scale: 0.72, y: 12 }}
+          animate={{ opacity: [0, 1, 1, 1], scale: [0.72, 1, 1.04, 1], y: [12, 0, 0, 0] }}
+          transition={{ duration: 0.8, times: [0, 0.32, 0.7, 1], ease: [0.22, 0.61, 0.36, 1] }}
+          className="relative mt-5 h-[142px] w-[156px] drop-shadow-[0_18px_34px_rgba(0,0,0,.38)]"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.55, delay: 0.05, ease: [0.22, 0.61, 0.36, 1] }}
-            className="relative w-[164px] h-[164px] rounded-[24px] bg-[#f5f7fb] shadow-[0_20px_44px_rgba(0,0,0,0.22)] flex items-center justify-center overflow-hidden border border-white/45"
-          >
-            <div className="absolute inset-x-6 top-3 h-7 rounded-full bg-white/75 blur-lg" />
-
-            <div className="absolute inset-[7px] z-10 rounded-[20px] overflow-hidden bg-mango-green shadow-[0_18px_34px_rgba(0,0,0,0.2)]">
-              <div className="relative w-full h-full flex items-center justify-center">
-                <Image
-                  src={shopConfig.assets.logo}
-                  alt={`${shopConfig.name} Logo`}
-                  width={144}
-                  height={144}
-                  className="w-full h-full object-contain scale-[1.3]"
-                  priority
-                />
-                <motion.div
-                  className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#FBEC89] to-transparent pointer-events-none"
-                  initial={{ top: '8%' }}
-                  animate={{ top: '88%' }}
-                  transition={{
-                    duration: 1.45,
-                    repeat: Infinity,
-                    ease: 'linear',
-                    repeatDelay: 0.2
-                  }}
-                  style={{
-                    boxShadow: '0 0 14px rgba(251, 236, 137, 0.75), 0 0 26px rgba(251, 236, 137, 0.35)'
-                  }}
-                />
-              </div>
-            </div>
-
-            <motion.div
-              className="absolute top-[5px] left-[5px] w-8 h-8 border-t-[3px] border-l-[3px] border-[#FBEC89] rounded-tl-[22px]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            />
-            <motion.div
-              className="absolute top-[5px] right-[5px] w-8 h-8 border-t-[3px] border-r-[3px] border-[#FBEC89] rounded-tr-[22px]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            />
-            <motion.div
-              className="absolute bottom-[5px] left-[5px] w-8 h-8 border-b-[3px] border-l-[3px] border-[#FBEC89] rounded-bl-[22px]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            />
-            <motion.div
-              className="absolute bottom-[5px] right-[5px] w-8 h-8 border-b-[3px] border-r-[3px] border-[#FBEC89] rounded-br-[22px]"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-            />
-          </motion.div>
+          <Image src="/components/fff.png" alt="Mango" fill priority className="object-contain" sizes="156px" />
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-center mt-1"
+          initial={{ opacity: 0, y: 9 }}
+          animate={{ opacity: [0, 0, 1, 1], y: [9, 9, 0, 0] }}
+          transition={{ duration: 0.86, times: [0, 0.36, 0.7, 1], ease: 'easeOut' }}
+          className="mt-3 text-center"
         >
-          <p className="text-[11px] text-slate-400 mb-2 tracking-[0.18em] uppercase">
-            Welcome to
-          </p>
-          <p className="text-[28px] leading-none font-bold text-white tracking-tight">
-            {siteConfig.name}
-          </p>
+          <p className="font-serif text-[31px] font-bold leading-none tracking-[0.17em] text-[#FFFDF7]">MANGO</p>
+          <p className="mt-2 text-[10px] font-extrabold uppercase tracking-[0.23em] text-[#D9AD49]">Freshly Prepared</p>
+          <div className="mt-4 flex items-center justify-center gap-4 text-[#D9AD49]" aria-hidden>
+            <span className="grid h-8 w-8 place-items-center rounded-full border border-[#D9AD49]/35 bg-white/[.04]"><Leaf className="h-4 w-4" /></span>
+            <span className="h-px w-8 bg-[#D9AD49]/45" />
+            <span className="grid h-8 w-8 place-items-center rounded-full border border-[#D9AD49]/35 bg-white/[.04]"><UtensilsCrossed className="h-4 w-4" /></span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: [0, 0, 1, 1], y: [8, 8, 0, 0] }}
+          transition={{ duration: 0.9, times: [0, 0.66, 0.82, 1], ease: 'easeOut' }}
+          className="absolute bottom-1 left-0 right-0 z-20 text-center"
+        >
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-white/75">Loading your experience</p>
+          <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white/40">Mango · Fresh flavours await</p>
+          <div className="mt-4 flex items-center justify-center gap-1.5" aria-label="Loading">
+            {[0, 1, 2].map((dot) => (
+              <motion.span key={dot} className="h-1.5 w-1.5 rounded-full bg-[#D9AD49]" animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1.2, 0.8] }} transition={{ duration: 0.75, repeat: Infinity, delay: dot * 0.14 }} />
+            ))}
+          </div>
         </motion.div>
       </div>
     </motion.div>

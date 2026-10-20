@@ -5,7 +5,6 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { ArrowRight } from 'lucide-react'
 
 // Gallery images from public/gallery folder (Mango)
 const galleryImages = [
@@ -49,11 +48,11 @@ export default function Gallery() {
       >
         <div className="section-title-accent mb-2">
           <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight text-left">
-            Gallery
+            A Taste of Mango
           </h2>
         </div>
         <p className="text-sm sm:text-base text-slate-300/90 font-normal text-left">
-          Moments at Mango
+          A little glimpse of everything we love serving.
         </p>
       </motion.div>
 
@@ -96,10 +95,14 @@ export default function Gallery() {
               sessionStorage.setItem('fromGallery', 'true')
             }
           }}
-          className="block w-full bg-mango-green hover:bg-mango-greenSoft text-white font-bold py-4 px-6 rounded-2xl shadow-[0_18px_34px_rgba(30,77,61,0.28)] hover:shadow-[0_22px_40px_rgba(30,77,61,0.34)] transition-all flex items-center justify-center gap-2"
+          className="flex min-h-[56px] w-full items-center justify-center gap-2.5 rounded-2xl border border-[#D9AD49]/30 bg-[#184D3B] px-4 font-extrabold text-white shadow-[0_12px_24px_rgba(30,77,61,.28)] transition-all hover:bg-[#28624d] hover:shadow-[0_16px_28px_rgba(30,77,61,.34)] active:scale-[.99]"
         >
-          View Gallery
-          <ArrowRight className="w-5 h-5" />
+          <span className="flex shrink-0 -space-x-2" aria-hidden>
+            <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-[#B9D4A7] bg-white shadow-sm"><Image src="/gallery/unnamed%20(2).webp" alt="" fill className="object-cover" sizes="28px" /></span>
+            <span className="relative h-7 w-7 overflow-hidden rounded-full border-2 border-[#B9D4A7] bg-white shadow-sm"><Image src="/gallery/unnamed%20(4).webp" alt="" fill className="object-cover" sizes="28px" /></span>
+          </span>
+          <span className="whitespace-nowrap text-base tracking-tight">View Gallery</span>
+          <span aria-hidden className="text-xl leading-none">→</span>
         </Link>
       </motion.div>
     </section>

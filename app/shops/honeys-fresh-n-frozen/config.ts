@@ -13,11 +13,11 @@ export interface ContactPerson {
 export const shopConfig = {
   // Basic Info (Hero / first card: Mango Bahu Plaza)
   name: "MANGO",
-  tagline: "Pure Vegetarian • Budget Friendly • Bahu Plaza, Jammu",
-  taglineShort: "Authentic Taste. Everyday Prices.",
+  tagline: "Pure Vegetarian • Freshly Prepared",
+  taglineShort: "Fresh favourites, made for Mango moments.",
   url: "https://mango.onelink.cards",
   cardType: "B2C" as const,
-  keywordBadges: ["4.1 ★ Google Rating", "₹200–400 per person", "Pure Vegetarian", "Bahu Plaza Location"] as string[],
+  keywordBadges: ["★ 4.1 Google Rated", "₹200–400 / Person"] as string[],
 
   // Contact Information (Mango Bahu Plaza)
   contact: {
@@ -54,6 +54,7 @@ export const shopConfig = {
     facebook: "https://www.facebook.com/share/198avg1doq/",
     instagram: "https://www.instagram.com/mangojammu/?hl=en",
     instagramJammu: "https://www.instagram.com/mangojammu/?hl=en",
+    tiktok: "",
     twitter: "",
     linkedin: "",
     swiggy: "https://www.swiggy.com/menu/105228?source=sharing",
@@ -61,8 +62,8 @@ export const shopConfig = {
   },
 
   instagramFeed: {
-    title: "Latest on Instagram",
-    subtitle: "Fresh drops, reels and cafe vibes from Mango",
+    title: "Moments at Mango",
+    subtitle: "Fresh plates, familiar favourites and life at Mango.",
     profileHandle: "@mangojammu",
     posts: [
       {
@@ -124,14 +125,14 @@ export const shopConfig = {
     { name: "Pure Vegetarian Restaurant", tagline: "", logo: "" },
     { name: "Dine-In Available", tagline: "", logo: "" },
     { name: "Takeaway Available", tagline: "", logo: "" },
-    { name: "Budget Friendly Dining", tagline: "", logo: "" },
+    { name: "Freshly Prepared", tagline: "", logo: "" },
     { name: "North Indian & Chinese Cuisine", tagline: "", logo: "" },
   ],
 
   // About Section (Welcome to Mango)
   about: {
     title: "Welcome to Mango",
-    shortDescription: "Located in the heart of Bahu Plaza, Mango is a pure vegetarian restaurant serving authentic North Indian and Chinese flavours. We focus on clean preparation, quality ingredients, and a welcoming dining experience for families and friends.",
+    shortDescription: "Good food, great flavours, and happy moments! Enjoy freshly prepared vegetarian favourites, from comforting North Indian classics to delicious Chinese dishes, all served with love at Mango.",
   },
   menuUrl: "/menu",
 

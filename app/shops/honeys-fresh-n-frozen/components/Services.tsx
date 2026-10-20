@@ -1,122 +1,30 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Sparkles, Leaf, ChefHat, Heart } from 'lucide-react'
 import Image from 'next/image'
 
-const services = [
-  {
-    id: 'service-1',
-    icon: Sparkles,
-    title: 'Clean & Hygienic Kitchen',
-    description: 'Freshly prepared food in a well-maintained environment.',
-    image: '/gallery/unnamed.webp',
-  },
-  {
-    id: 'service-2',
-    icon: Leaf,
-    title: 'Pure Vegetarian',
-    description: '100% vegetarian menu crafted with quality ingredients.',
-    image: '/gallery/unnamed (1).webp',
-  },
-  {
-    id: 'service-3',
-    icon: ChefHat,
-    title: 'Freshly Prepared Daily',
-    description: 'Every dish is prepared fresh in our kitchen.',
-    image: '/gallery/unnamed (2).webp',
-  },
-  {
-    id: 'service-4',
-    icon: Heart,
-    title: 'Healthy & Balanced Meals',
-    description: 'Tasteful food made with care and proper preparation standards.',
-    image: '/gallery/unnamed (3).webp',
-  },
+const reasons = [
+  { title: '100% Vegetarian', description: 'Delicious vegetarian food, made for everyone.', image: '/gallery/unnamed.webp' },
+  { title: 'Freshly Prepared', description: 'Fresh ingredients and flavour in every bite.', image: '/gallery/unnamed (2).webp' },
+  { title: 'Dine In or Pick Up', description: 'Enjoy your favourites your way.', image: '/gallery/unnamed (3).webp' },
+  { title: 'Made for Every Craving', description: 'From everyday meals to satisfying treats.', image: '/gallery/unnamed (5).webp' },
 ]
 
 export default function Services() {
   return (
-    <motion.section
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="w-full max-w-md mx-auto py-6"
-    >
-      <div className="mb-6">
-        <div className="section-title-accent mb-2">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight text-left">
-            Why Mango?
-          </h2>
-        </div>
-        <p className="text-sm sm:text-base text-slate-300/90 font-normal text-left">
-          Clean • Pure Veg • Fresh • Made with Care
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 gap-3.5">
-        {services.map((service, index) => {
-          const IconComponent = service.icon
-          return (
-            <motion.div
-              key={service.id}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ delay: index * 0.05, duration: 0.3, ease: 'easeOut' }}
-              className="group relative overflow-hidden rounded-[25px] p-5 transition-transform duration-300 hover:-translate-y-0.5"
-              style={{
-                background: 'linear-gradient(135deg, #FBEC89 0%, #FDF8E0 35%, #ffffff 72%, #FEFDF8 100%)',
-                border: '1px solid rgba(251, 236, 137, 0.44)',
-                boxShadow: '0 14px 32px rgba(15, 23, 42, 0.10), 0 4px 14px rgba(30, 77, 61, 0.10)',
-              }}
-            >
-              <div className="pointer-events-none absolute inset-y-0 left-0 w-[62%] overflow-hidden" aria-hidden>
-                <Image
-                  src={service.image}
-                  alt=""
-                  fill
-                  className="scale-110 object-cover object-center opacity-[0.30] blur-[1.5px] saturate-[0.9]"
-                  sizes="280px"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-white/15 via-white/55 to-[#FEFDF8]" />
-                <div className="absolute inset-0 bg-gradient-to-b from-white/18 via-transparent to-white/38" />
-              </div>
-              <div className="absolute inset-x-0 top-0 h-20 opacity-65 pointer-events-none bg-gradient-to-b from-white/85 to-transparent" />
-              <div className="absolute right-4 top-4 rounded-full border border-[#1E4D3D]/10 bg-white/80 px-2 py-1 text-[9px] font-black tracking-[0.18em] text-[#1E4D3D] shadow-sm">
-                  {String(index + 1).padStart(2, '0')}
-              </div>
-
-              <div className="relative z-10 flex items-start gap-4 transition-all duration-300 group-hover:-translate-y-0.5">
-                <div
-                  className="relative z-10 w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 border border-[#FBEC89]/60"
-                  style={{
-                    background: 'linear-gradient(145deg, rgba(255,255,255,0.98) 0%, #FBEC89 100%)',
-                    boxShadow: '0 8px 18px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255,255,255,0.92)',
-                  }}
-                >
-                  <IconComponent className="w-7 h-7 relative z-10" style={{ color: '#1E4D3D' }} strokeWidth={2} />
-                </div>
-
-                <div className="flex-1 relative z-10 pr-7">
-                  <h3
-                    className="font-bold text-base mb-1.5 leading-tight"
-                    style={{ color: '#1e293b' }}
-                  >
-                    {service.title}
-                  </h3>
-                  <p
-                    className="text-sm leading-relaxed"
-                    style={{ color: '#475569' }}
-                  >
-                    {service.description}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-          )
-        })}
+    <motion.section initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: '-50px' }} transition={{ duration: .3 }} className="mx-auto w-full max-w-md py-6">
+      <header className="mb-5">
+        <div className="section-title-accent mb-2"><h2 className="text-2xl font-extrabold tracking-tight text-white sm:text-3xl">Why You’ll Love Mango</h2></div>
+        <p className="text-sm text-white/70 sm:text-base">Fresh flavours, good food and happy moments.</p>
+      </header>
+      <div className="space-y-3">
+        {reasons.map(({ title, description, image }, index) => (
+          <motion.article key={title} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * .05, duration: .28 }} className="relative min-h-[112px] overflow-hidden rounded-[23px] border border-[#D9AD49]/30 bg-[#FFFDF7] shadow-[0_12px_28px_rgba(0,0,0,.18)]">
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-[58%] overflow-hidden"><Image src={image} alt="" fill sizes="260px" className="object-cover object-center opacity-85" aria-hidden /><div className="absolute inset-0 bg-[linear-gradient(90deg,#FFFDF7_0%,rgba(255,250,240,.94)_18%,rgba(255,250,240,.55)_56%,rgba(255,250,240,.08)_100%)]" /></div>
+            <span className="absolute right-4 top-3 text-[10px] font-black tracking-[.18em] text-[#276044]">0{index + 1}</span>
+            <div className="relative z-10 flex min-h-[112px] items-center gap-3 p-4"><span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl border border-[#184D3B]/20 bg-white shadow-[0_7px_16px_rgba(33,89,65,.14)]"><Image src={image} alt="" fill sizes="56px" className="object-cover" aria-hidden /></span><div className="min-w-0 max-w-[70%]"><h3 className="text-[16px] font-extrabold leading-tight text-[#19231d]">{title}</h3><p className="mt-1.5 text-[12px] font-semibold leading-[1.45] text-slate-600">{description}</p></div></div>
+          </motion.article>
+        ))}
       </div>
     </motion.section>
   )
