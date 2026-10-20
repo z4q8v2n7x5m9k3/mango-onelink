@@ -52,13 +52,13 @@ export default function Home() {
     const timer = setTimeout(() => {
       sessionStorage.setItem('mangoLandingLoaded', 'true')
       setShowLoading(false)
-    }, 1800)
+    }, 1100)
 
     // Fallback: ensure loading screen always disappears quickly
     const fallbackTimer = setTimeout(() => {
       sessionStorage.setItem('mangoLandingLoaded', 'true')
       setShowLoading(false)
-    }, 2600)
+    }, 1700)
 
     return () => {
       clearTimeout(timer)

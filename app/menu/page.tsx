@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Moon, Sun, ShoppingCart, ShoppingBag, Plus, Minus, Check, List, X, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, FileText, ArrowUpRight, Search } from 'lucide-react'
+import { ArrowLeft, Moon, Sun, ShoppingCart, ShoppingBag, Plus, Minus, Check, List, X, ChevronDown, ChevronUp, FileText, ArrowUpRight, Search } from 'lucide-react'
 import { menuCategories, type CartItem, type MenuItem } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
@@ -158,13 +158,6 @@ function MenuPageInner() {
     )
   }, [currentCategory.items, searchQuery])
   const currentItemCount = browseItems.length
-
-  const scrollCategoryStrip = (direction: 'left' | 'right') => {
-    const scroller = categoryScrollerRef.current
-    if (!scroller) return
-    const amount = Math.max(160, Math.round(scroller.clientWidth * 0.72))
-    scroller.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' })
-  }
 
   const openWhatsApp = () => {
     const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9419532222'
@@ -411,13 +404,7 @@ function MenuPageInner() {
                   <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder={`Search ${currentCategory.name.toLowerCase()}...`} className="min-w-0 flex-1 bg-transparent text-[14px] font-semibold text-slate-900 outline-none placeholder:text-slate-400" aria-label="Search menu items" />
                   {searchQuery && <button type="button" onClick={() => setSearchQuery('')} className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#EAF1E9] text-[#184D3B]" aria-label="Clear menu search"><X className="h-3.5 w-3.5" /></button>}
                 </label>
-                <div className="mb-2 flex items-center justify-between rounded-full border border-[#D9AD49]/25 bg-[#FFFDF7] px-3 py-1.5 shadow-[0_4px_12px_rgba(24,77,59,.04)]">
-                  <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-600">Browse categories</p>
-                  <span className="flex items-center gap-1.5">
-                    <button type="button" onClick={() => scrollCategoryStrip('left')} className="grid h-7 w-7 place-items-center rounded-full border border-[#D9AD49]/30 bg-white text-[#184D3B] shadow-sm" aria-label="Show previous categories"><ChevronLeft className="h-4 w-4" /></button>
-                    <button type="button" onClick={() => scrollCategoryStrip('right')} className="grid h-7 w-7 place-items-center rounded-full border border-[#D9AD49]/30 bg-white text-[#184D3B] shadow-sm" aria-label="Show more categories"><ChevronRight className="h-4 w-4" /></button>
-                  </span>
-                </div>
+                <p className="mb-1 px-1 text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-500">Categories</p>
                 <div ref={categoryScrollerRef} className="flex min-w-0 gap-2.5 overflow-x-auto scrollbar-hide py-1 pl-0.5 pr-6" style={{ WebkitMaskImage: 'linear-gradient(to right,#000 0%,#000 calc(100% - 28px),transparent 100%)', maskImage: 'linear-gradient(to right,#000 0%,#000 calc(100% - 28px),transparent 100%)' }}>
                   {categoryKeys.map((key) => {
                     const cat = menuCategories[key]
@@ -634,7 +621,7 @@ function MenuPageInner() {
                                           }
                                     }
                                   >
-                                    <div className="relative z-10 flex min-w-0 gap-3 p-3">
+                                    <div className="relative z-10 flex min-w-0 gap-3 p-4">
                                       <div className="min-w-0 flex-1 py-1">
                                       <span
                                         className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold border ${
@@ -652,10 +639,7 @@ function MenuPageInner() {
                                         <p className={`text-xs mt-1 ${isLightMode ? 'text-slate-500' : 'text-white/55'}`}>{item.quantity}</p>
                                       )}
                                       </div>
-                                      <div className="flex w-[88px] shrink-0 flex-col items-center gap-2 pt-1">
-                                        <div className="relative h-[72px] w-[72px] overflow-hidden rounded-[16px] border border-[#D9AD49]/25 bg-[#EAF1E9] shadow-sm">
-                                          <Image src={item.image || cat.image} alt={item.name} fill className="object-cover" sizes="72px" unoptimized />
-                                        </div>
+                                      <div className="flex w-[88px] shrink-0 flex-col justify-end gap-2 pt-1">
                                         {inCartQty > 0 ? (
                                           <div className={`flex h-9 w-full items-center justify-between rounded-xl px-1 transition-transform ${lastAddedItemId === item.id ? 'scale-[1.03]' : ''}`} style={{ background: '#184D3B', color: '#FFFFFF' }}>
                                             <button type="button" onClick={() => updateCartQuantity(item.id, inCartQty - 1)} className="flex h-7 w-7 items-center justify-center rounded-full text-white">
@@ -720,7 +704,7 @@ function MenuPageInner() {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: Math.min(index * 0.02, 0.15) }}
-                      className="group relative flex min-h-[112px] items-center gap-3 overflow-hidden rounded-[22px] border p-3 transition-all duration-300"
+                      className="group relative flex min-h-[96px] items-center gap-3 overflow-hidden rounded-[22px] border p-4 transition-all duration-300"
                       style={
                         isLightMode
                           ? {
@@ -735,11 +719,6 @@ function MenuPageInner() {
                             }
                       }
                     >
-                      <div className="relative h-[92px] w-[92px] shrink-0 overflow-hidden rounded-[17px] bg-[#EAF1E9] ring-1 ring-[#D9AD49]/25">
-                        <Image src={item.image || currentCategory.image} alt={item.name} fill className="object-cover transition duration-500 group-hover:scale-105" sizes="92px" unoptimized />
-                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,15,15,.06)_35%,rgba(15,15,15,.30)_100%)]" />
-                        <span className="absolute left-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-[8px] border border-white/70 bg-white/95 shadow-sm" aria-label="Vegetarian"><span className="h-2 w-2 rounded-full border border-[#16803C] p-[1px]"><span className="block h-full w-full rounded-full bg-[#16803C]" /></span></span>
-                      </div>
                       <div className="min-w-0 flex-1 py-1">
                         <h3 className={`break-words text-[14px] font-extrabold leading-snug sm:text-[15px] ${isLightMode ? 'text-slate-900' : 'text-white/95'}`}>{item.name}</h3>
                         {item.description && <p className={`mt-1 break-words text-[11px] font-medium leading-snug ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>{item.description}</p>}

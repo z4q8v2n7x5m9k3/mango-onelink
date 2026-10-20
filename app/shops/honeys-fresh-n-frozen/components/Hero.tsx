@@ -306,7 +306,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.22, duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
               >
-                <h1 className="text-2xl font-black text-slate-900 mb-1 leading-tight tracking-tight">
+                <h1 className="mb-1 text-2xl font-black leading-tight tracking-tight text-[#184D3B]">
                   {shopConfig.name}
                 </h1>
                 <p className="text-mango-green font-semibold text-[15px] mb-3">
