@@ -24,14 +24,14 @@ const orderTypes = {
   },
   'dine-in': {
     label: 'Dine In',
-    detail: 'Enjoy your meal at Mango',
+    detail: 'Enjoy your meal here',
     Icon: UtensilsCrossed,
     image: '/gallery/unnamed%20(5).webp',
     href: '/menu?mode=order&type=dine-in',
   },
   takeaway: {
     label: 'Takeaway',
-    detail: 'Order ahead and pick it up',
+    detail: 'Order ahead, then pick up',
     Icon: PackageCheck,
     image: '/gallery/unnamed%20(2).webp',
     href: '/menu?mode=order&type=takeaway',
@@ -79,15 +79,9 @@ export default function OrderTypeSheet({
             aria-labelledby="mango-order-type-title"
           >
             <div className="flex items-start justify-between gap-3 border-b border-[#1E4D3D]/10 bg-white px-4 pb-3.5 pt-4">
-              <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-[14px] border border-[#d9c98a] bg-[#1E4D3D] text-sm font-black tracking-tight text-[#FBEC89]">
-                  M
-                </span>
-                <div>
-                  <p className="text-[10px] font-extrabold uppercase tracking-[.16em] text-[#2F6B55]">Mango · Bahu Plaza</p>
-                  <p id="mango-order-type-title" className="mt-0.5 text-[18px] font-black tracking-tight text-[#173c2c]">How would you like to order?</p>
-                  <p className="mt-0.5 text-[11px] font-medium text-slate-500">Choose dine-in or pickup.</p>
-                </div>
+              <div className="min-w-0 flex-1">
+                <p id="mango-order-type-title" className="text-[18px] font-black tracking-tight text-[#173c2c]">How would you like to order?</p>
+                <p className="mt-1 text-[12px] font-medium text-slate-500">Enjoy a meal at Mango.</p>
               </div>
               <button
                 type="button"

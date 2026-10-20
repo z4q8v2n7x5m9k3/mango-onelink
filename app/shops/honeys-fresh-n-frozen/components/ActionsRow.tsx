@@ -56,10 +56,10 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
     <div className="w-full space-y-3" data-actions-row onClick={(event) => event.stopPropagation()}>
       {/* Burger Bazaar sizing: compact 44px round primary actions */}
       <div className="grid grid-cols-2 gap-2">
-        <a href={person ? getTelLink(person.phoneE164) : `tel:${shopConfig.contact.phones[0]}`} className="relative flex h-11 min-w-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-[#184D3B] px-2 text-sm font-bold text-white shadow-[0_8px_20px_rgba(24,77,59,.22),0_4px_8px_rgba(21,21,21,.08),inset_0_1px_0_rgba(255,255,255,.12)] transition duration-200 hover:brightness-[1.03] active:scale-[.97] before:absolute before:inset-x-4 before:top-0 before:h-[38%] before:rounded-full before:bg-gradient-to-b before:from-white/10 before:to-transparent before:content-['']">
+        <a href={person ? getTelLink(person.phoneE164) : `tel:${shopConfig.contact.phones[0]}`} className="relative flex h-11 min-w-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-[#184D3B] px-2 text-sm font-bold text-white shadow-[0_8px_18px_rgba(24,77,59,.20),0_4px_8px_rgba(21,21,21,.07),inset_0_1px_0_rgba(255,255,255,.08)] transition duration-200 hover:brightness-[1.03] active:scale-[.97] before:absolute before:inset-x-5 before:top-0 before:h-[30%] before:rounded-full before:bg-gradient-to-b before:from-white/5 before:to-transparent before:content-['']">
           <Phone className="relative z-10 h-4 w-4 shrink-0" /><span className="relative z-10 truncate">Call Now</span>
         </a>
-        <button type="button" onClick={() => setOrderOpen(true)} className="relative flex h-11 min-w-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-[#184D3B] px-2 text-sm font-bold text-white shadow-[0_8px_20px_rgba(24,77,59,.22),0_4px_8px_rgba(21,21,21,.08),inset_0_1px_0_rgba(255,255,255,.12)] transition duration-200 hover:brightness-[1.03] active:scale-[.97] before:absolute before:inset-x-4 before:top-0 before:h-[38%] before:rounded-full before:bg-gradient-to-b before:from-white/10 before:to-transparent before:content-['']">
+        <button type="button" onClick={() => setOrderOpen(true)} className="relative flex h-11 min-w-0 items-center justify-center gap-2 overflow-hidden rounded-full bg-[#184D3B] px-2 text-sm font-bold text-white shadow-[0_8px_18px_rgba(24,77,59,.20),0_4px_8px_rgba(21,21,21,.07),inset_0_1px_0_rgba(255,255,255,.08)] transition duration-200 hover:brightness-[1.03] active:scale-[.97] before:absolute before:inset-x-5 before:top-0 before:h-[30%] before:rounded-full before:bg-gradient-to-b before:from-white/5 before:to-transparent before:content-['']">
           <ShoppingBag className="relative z-10 h-4 w-4 shrink-0" /><span className="relative z-10 truncate">Order Now</span>
         </button>
       </div>
@@ -99,8 +99,10 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <Link
-          href="/reviews"
+        <a
+          href={shopConfig.google.reviewsUrl}
+          target="_blank"
+          rel="noreferrer"
           className="relative flex h-11 w-full min-w-0 items-center justify-center gap-2 overflow-hidden rounded-2xl border border-white/80 px-2 transition-all active:scale-[0.97] touch-manipulation hover:brightness-[1.02]"
           style={{
             background: 'linear-gradient(112deg, #AECBFA 0%, #C6DAFC 22%, #F6AEA6 43%, #FDE293 68%, #A8DAB5 100%)',
@@ -114,7 +116,7 @@ const ActionsRow = forwardRef<ActionsRowRef, ActionsRowProps>(({ onOpenPayments 
           </span>
           <GoogleGIcon className="relative z-10 h-[18px] w-[18px] shrink-0" />
           <span className="relative z-10 text-sm font-bold text-[#151515]">Reviews</span>
-        </Link>
+        </a>
         <a href={mapUrl} target="_blank" rel="noreferrer" className={`${pill} w-full gap-2 border border-white/80 bg-[linear-gradient(115deg,#EAF1E9_0%,#DDEBDF_48%,#CBE1D0_100%)] px-2 shadow-[0_8px_18px_rgba(52,168,83,.16),0_4px_9px_rgba(21,21,21,.07),inset_0_1px_0_rgba(255,255,255,.82)]`}>
           <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-[.14]" viewBox="0 0 180 44" preserveAspectRatio="none" aria-hidden><path d="M-8 34C22 12 42 15 66 28s43 10 62-3 36-14 60-7" fill="none" stroke="#34A853" strokeWidth="2.1"/><path d="M19-5c8 15 8 28-1 50M92-4c-8 15-5 29 11 49M151-4c-5 12-3 25 8 49" fill="none" stroke="#4285F4" strokeWidth="1.5" strokeDasharray="4 4"/><path d="M-5 11c30 7 53 5 76-5s45-6 63 5 35 11 53 2" fill="none" stroke="#FBBC05" strokeWidth="1.6"/></svg>
           <span className="relative z-10 grid h-6 w-6 shrink-0 place-items-center" aria-hidden><svg viewBox="0 0 24 24" className="h-[21px] w-[21px]"><path d="m2.8 6.1 5.1-2.4v15.9L2.8 22V6.1Z" fill="#34A853"/><path d="m7.9 3.7 6 2.1v15.9l-6-2.1V3.7Z" fill="#FBBC05"/><path d="m13.9 5.8 7.3-2.7V19l-7.3 2.7V5.8Z" fill="#4285F4"/><path d="M16.6 2.2a4.3 4.3 0 0 0-4.3 4.3c0 3.2 4.3 7.8 4.3 7.8s4.3-4.6 4.3-7.8a4.3 4.3 0 0 0-4.3-4.3Z" fill="#EA4335"/><circle cx="16.6" cy="6.5" r="1.65" fill="white"/></svg></span>

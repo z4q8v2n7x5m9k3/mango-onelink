@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { ArrowLeft, Moon, Sun, ShoppingCart, ShoppingBag, Plus, Minus, Check, List, X, ChevronDown, ChevronUp, FileText, ArrowUpRight } from 'lucide-react'
+import { ArrowLeft, Moon, Sun, ShoppingCart, ShoppingBag, Plus, Minus, Check, List, X, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, FileText, ArrowUpRight, Search } from 'lucide-react'
 import { menuCategories, type CartItem, type MenuItem } from '../shops/honeys-fresh-n-frozen/menu'
 import { shopConfig } from '../shops/honeys-fresh-n-frozen/config'
 import { getWhatsAppLink } from '../lib/phone'
@@ -76,6 +76,7 @@ function MenuPageInner() {
   const [cart, setCart] = useState<CartItem[]>([])
   const [lastAddedItemId, setLastAddedItemId] = useState<string | null>(null)
   const [cartBarPulse, setCartBarPulse] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const [showCategoryMenu, setShowCategoryMenu] = useState(false)
   const [showOrderTypeMenu, setShowOrderTypeMenu] = useState(false)
   const [expandedOrderCategory, setExpandedOrderCategory] = useState<MenuCategoryKey | null>(initialCat)
@@ -149,7 +150,21 @@ function MenuPageInner() {
   }, [activeCategory])
 
   const currentCategory = menuCategories[activeCategory]
-  const currentItemCount = currentCategory.items.length
+  const browseItems = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase()
+    if (!query) return currentCategory.items
+    return currentCategory.items.filter((item) =>
+      [item.name, item.description, item.quantity].filter(Boolean).join(' ').toLowerCase().includes(query)
+    )
+  }, [currentCategory.items, searchQuery])
+  const currentItemCount = browseItems.length
+
+  const scrollCategoryStrip = (direction: 'left' | 'right') => {
+    const scroller = categoryScrollerRef.current
+    if (!scroller) return
+    const amount = Math.max(160, Math.round(scroller.clientWidth * 0.72))
+    scroller.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' })
+  }
 
   const openWhatsApp = () => {
     const phone = shopConfig.contact.phones[0]?.replace(/\D/g, '') || '9419532222'
@@ -195,6 +210,8 @@ function MenuPageInner() {
       .map((key) => {
         const cat = menuCategories[key]
         const items = cat.items.filter((item) => {
+          const query = searchQuery.trim().toLowerCase()
+          if (query && ![item.name, item.description, item.quantity].filter(Boolean).join(' ').toLowerCase().includes(query)) return false
           const price = getItemNumericPrice(item.price)
           if (activeFilter === 'all') return true
           if (activeFilter === 'under150') return price > 0 && price <= 150
@@ -209,7 +226,7 @@ function MenuPageInner() {
         return { key, cat, items }
       })
       .filter((entry) => entry.items.length > 0)
-  }, [activeFilter])
+  }, [activeFilter, searchQuery])
 
   const scrollToCategorySection = (key: MenuCategoryKey) => {
     const header = orderHeaderRefs.current[key]
@@ -389,6 +406,18 @@ function MenuPageInner() {
                 )}
                 {!isOrderMode && (
                 <div>
+                <label className="mb-2.5 flex h-11 items-center gap-3 rounded-2xl border border-[#D9AD49]/30 bg-white px-3.5 shadow-[0_6px_16px_rgba(24,77,59,.06)] focus-within:border-[#184D3B]/45 focus-within:ring-4 focus-within:ring-[#184D3B]/[.07]">
+                  <Search className="h-[18px] w-[18px] shrink-0 text-[#184D3B]" strokeWidth={2.3} />
+                  <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder={`Search ${currentCategory.name.toLowerCase()}...`} className="min-w-0 flex-1 bg-transparent text-[14px] font-semibold text-slate-900 outline-none placeholder:text-slate-400" aria-label="Search menu items" />
+                  {searchQuery && <button type="button" onClick={() => setSearchQuery('')} className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#EAF1E9] text-[#184D3B]" aria-label="Clear menu search"><X className="h-3.5 w-3.5" /></button>}
+                </label>
+                <div className="mb-2 flex items-center justify-between rounded-full border border-[#D9AD49]/25 bg-[#FFFDF7] px-3 py-1.5 shadow-[0_4px_12px_rgba(24,77,59,.04)]">
+                  <p className="text-[10px] font-extrabold uppercase tracking-[0.14em] text-slate-600">Browse categories</p>
+                  <span className="flex items-center gap-1.5">
+                    <button type="button" onClick={() => scrollCategoryStrip('left')} className="grid h-7 w-7 place-items-center rounded-full border border-[#D9AD49]/30 bg-white text-[#184D3B] shadow-sm" aria-label="Show previous categories"><ChevronLeft className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => scrollCategoryStrip('right')} className="grid h-7 w-7 place-items-center rounded-full border border-[#D9AD49]/30 bg-white text-[#184D3B] shadow-sm" aria-label="Show more categories"><ChevronRight className="h-4 w-4" /></button>
+                  </span>
+                </div>
                 <div ref={categoryScrollerRef} className="flex min-w-0 gap-2.5 overflow-x-auto scrollbar-hide py-1 pl-0.5 pr-6" style={{ WebkitMaskImage: 'linear-gradient(to right,#000 0%,#000 calc(100% - 28px),transparent 100%)', maskImage: 'linear-gradient(to right,#000 0%,#000 calc(100% - 28px),transparent 100%)' }}>
                   {categoryKeys.map((key) => {
                     const cat = menuCategories[key]
@@ -415,6 +444,11 @@ function MenuPageInner() {
                 )}
                 {isOrderMode && (
                   <>
+                    <label className="mb-2.5 mt-2 flex h-11 items-center gap-3 rounded-2xl border border-[#D9AD49]/30 bg-white px-3.5 shadow-[0_6px_16px_rgba(24,77,59,.06)] focus-within:border-[#184D3B]/45 focus-within:ring-4 focus-within:ring-[#184D3B]/[.07]">
+                      <Search className="h-[18px] w-[18px] shrink-0 text-[#184D3B]" strokeWidth={2.3} />
+                      <input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Search the full menu..." className="min-w-0 flex-1 bg-transparent text-[14px] font-semibold text-slate-900 outline-none placeholder:text-slate-400" aria-label="Search the full menu" />
+                      {searchQuery && <button type="button" onClick={() => setSearchQuery('')} className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#EAF1E9] text-[#184D3B]" aria-label="Clear menu search"><X className="h-3.5 w-3.5" /></button>}
+                    </label>
                     <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1 pt-0.5 -mx-0.5 px-0.5">
                       {[
                         { id: 'all', label: 'All' },
@@ -480,13 +514,16 @@ function MenuPageInner() {
                 initial={{ opacity: 0.96 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.18, ease: 'easeOut' }}
-                className="relative min-h-[96px] overflow-hidden rounded-[22px] border border-[#E8E2D2] bg-white px-4 py-4 shadow-[0_8px_22px_rgba(15,23,42,.065)]"
+                className="relative min-h-[110px] overflow-hidden rounded-[24px] border border-white/20 bg-slate-900 px-4 py-4 shadow-[0_12px_28px_rgba(15,23,42,.16)]"
               >
-                <div className="relative min-w-0">
-                  <p className="mt-1 truncate text-[23px] font-black tracking-tight text-[#193c2d]">{currentCategory.name}</p>
-                  <p className="mt-1 text-[12px] font-semibold text-slate-500">{currentItemCount} {currentItemCount === 1 ? 'item' : 'items'} · Vegetarian</p>
+                <Image src={currentCategory.image} alt="" fill className="object-cover opacity-75" sizes="430px" unoptimized />
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(12,22,16,.92)_0%,rgba(18,47,32,.72)_58%,rgba(18,47,32,.22)_100%)]" />
+                <div className="relative z-10 min-w-0 pr-12">
+                  <p className="text-[10px] font-extrabold uppercase tracking-[0.17em] text-white/70">Menu category</p>
+                  <h2 className="mt-1 break-words text-[23px] font-black leading-tight tracking-tight text-white sm:text-[25px]">{currentCategory.name}</h2>
+                  <p className="mt-1 text-[12px] font-semibold text-white/80">{currentItemCount} {currentItemCount === 1 ? 'item' : 'items'} · made to order</p>
                 </div>
-                <span className="absolute right-4 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-[#1E4D3D]/15 bg-[#F3F7F2] text-[12px] font-black text-[#1E4D3D]">{currentItemCount}</span>
+                <span className="absolute right-4 top-1/2 z-10 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border border-white/35 bg-white/15 text-[11px] font-black text-white backdrop-blur-md">{currentItemCount}</span>
               </motion.div>
             </div>
           )}
@@ -536,8 +573,11 @@ function MenuPageInner() {
                           isLightMode ? 'bg-slate-50/70 hover:bg-slate-50' : 'bg-white/[0.04] hover:bg-white/[0.07]'
                         }`}
                       >
+                        <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-white shadow-[0_8px_18px_rgba(0,0,0,.14)] ring-1 ring-[#D9AD49]/35">
+                          <Image src={cat.image} alt="" fill className="object-cover" sizes="56px" unoptimized />
+                        </span>
                         <div className="min-w-0 flex-1">
-                          <span className={`block truncate text-[17px] font-extrabold leading-tight ${isLightMode ? 'text-slate-900' : 'text-white'}`}>
+                          <span className={`block break-words text-[16px] font-extrabold leading-tight sm:text-[17px] ${isLightMode ? 'text-slate-900' : 'text-white'}`}>
                             {cat.name}
                           </span>
                           <span className={`mt-1 block text-[13px] font-medium ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>
@@ -579,7 +619,7 @@ function MenuPageInner() {
                                     initial={{ opacity: 0, y: 8 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: Math.min(index * 0.02, 0.15) }}
-                                    className="group overflow-hidden rounded-[26px] border transition-all duration-300 relative min-h-[166px]"
+                                    className="group overflow-hidden rounded-[24px] border transition-all duration-300 relative"
                                     style={
                                       isLightMode
                                         ? {
@@ -594,7 +634,8 @@ function MenuPageInner() {
                                           }
                                     }
                                   >
-                                    <div className="p-4 relative z-10">
+                                    <div className="relative z-10 flex min-w-0 gap-3 p-3">
+                                      <div className="min-w-0 flex-1 py-1">
                                       <span
                                         className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold border ${
                                           isLightMode ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/15 text-emerald-200 border-emerald-400/35'
@@ -602,22 +643,26 @@ function MenuPageInner() {
                                       >
                                         Veg
                                       </span>
-                                      <h3 className={`text-[15px] font-bold leading-tight mt-2 ${isLightMode ? 'text-slate-900' : 'text-white'}`}>{item.name}</h3>
-                                      <p className={`text-sm font-semibold mt-1 ${isLightMode ? 'text-slate-700' : 'text-white/85'}`}>{item.price}</p>
+                                      <h3 className={`mt-2 break-words text-[15px] font-extrabold leading-snug ${isLightMode ? 'text-slate-900' : 'text-white'}`}>{item.name}</h3>
+                                      <p className={`mt-1 text-[16px] font-black ${isLightMode ? 'text-[#184D3B]' : 'text-white/90'}`}>{item.price}</p>
                                       {item.description && (
-                                        <p className={`text-xs mt-1 leading-snug ${isLightMode ? 'text-slate-500' : 'text-white/55'}`}>{item.description}</p>
+                                        <p className={`mt-1 break-words text-xs leading-snug ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>{item.description}</p>
                                       )}
                                       {item.quantity && item.quantity !== '1 portion' && (
                                         <p className={`text-xs mt-1 ${isLightMode ? 'text-slate-500' : 'text-white/55'}`}>{item.quantity}</p>
                                       )}
-                                      <div className="mt-3 flex justify-end">
+                                      </div>
+                                      <div className="flex w-[88px] shrink-0 flex-col items-center gap-2 pt-1">
+                                        <div className="relative h-[72px] w-[72px] overflow-hidden rounded-[16px] border border-[#D9AD49]/25 bg-[#EAF1E9] shadow-sm">
+                                          <Image src={item.image || cat.image} alt={item.name} fill className="object-cover" sizes="72px" unoptimized />
+                                        </div>
                                         {inCartQty > 0 ? (
-                                          <div className={`h-10 min-w-[120px] rounded-xl flex items-center justify-between px-3 transition-transform ${lastAddedItemId === item.id ? 'scale-[1.03]' : ''}`} style={{ background: '#215941', color: '#FFFFFF' }}>
-                                            <button type="button" onClick={() => updateCartQuantity(item.id, inCartQty - 1)} className="w-6 h-6 rounded-full flex items-center justify-center text-white">
+                                          <div className={`flex h-9 w-full items-center justify-between rounded-xl px-1 transition-transform ${lastAddedItemId === item.id ? 'scale-[1.03]' : ''}`} style={{ background: '#184D3B', color: '#FFFFFF' }}>
+                                            <button type="button" onClick={() => updateCartQuantity(item.id, inCartQty - 1)} className="flex h-7 w-7 items-center justify-center rounded-full text-white">
                                               <Minus className="w-4 h-4" />
                                             </button>
                                             <span className="text-sm font-bold tabular-nums">{inCartQty}</span>
-                                            <button type="button" onClick={() => addToCart(item)} className="w-6 h-6 rounded-full flex items-center justify-center text-white">
+                                            <button type="button" onClick={() => addToCart(item)} className="flex h-7 w-7 items-center justify-center rounded-full text-white">
                                               <Plus className="w-4 h-4" />
                                             </button>
                                           </div>
@@ -628,18 +673,18 @@ function MenuPageInner() {
                                             whileTap={{ scale: 0.97 }}
                                             animate={lastAddedItemId === item.id ? { scale: [1, 1.05, 1] } : { scale: 1 }}
                                             transition={{ duration: 0.28, ease: 'easeOut' }}
-                                            className="relative overflow-hidden h-10 min-w-[120px] rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 border-2"
+                                            className="relative flex h-9 w-full items-center justify-center gap-1 overflow-hidden rounded-xl border text-[11px] font-extrabold"
                                             style={{
-                                              borderColor: '#215941',
-                                              color: '#215941',
+                                              borderColor: '#184D3B',
+                                              color: '#184D3B',
                                               background: isLightMode ? '#FFFFFF' : 'rgba(255,255,255,0.06)',
                                             }}
                                           >
                                             {lastAddedItemId === item.id && (
                                               <span className="absolute inset-0 rounded-xl bg-[#215941]/10 animate-ping" />
                                             )}
-                                            <span className="relative z-10 inline-flex items-center gap-1.5">
-                                              ADD
+                                            <span className="relative z-10 inline-flex items-center gap-1">
+                                              Add
                                               <Plus className="w-4 h-4" />
                                             </span>
                                           </motion.button>
@@ -668,14 +713,14 @@ function MenuPageInner() {
                   viewport={{ once: true }}
                   className="grid grid-cols-1 gap-2.5"
                 >
-                  {currentCategory.items.map((item, index) => (
+                  {browseItems.map((item, index) => (
                     <motion.div
                       key={item.id}
                       initial={{ opacity: 0, y: 8 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: Math.min(index * 0.02, 0.15) }}
-                      className="group relative flex min-h-[94px] items-center gap-3 overflow-hidden rounded-[20px] border p-3.5 transition-all duration-300"
+                      className="group relative flex min-h-[112px] items-center gap-3 overflow-hidden rounded-[22px] border p-3 transition-all duration-300"
                       style={
                         isLightMode
                           ? {
@@ -690,18 +735,22 @@ function MenuPageInner() {
                             }
                       }
                     >
-                      <div className="min-w-0 flex-1 py-1 pr-1">
-                        <div className="mb-1 flex items-center gap-1.5">
-                          <span className="h-2 w-2 shrink-0 rounded-[2px] border border-[#16803C] p-[1px]"><span className="block h-full w-full rounded-full bg-[#16803C]" /></span>
-                          <span className={`text-[9px] font-extrabold uppercase tracking-[.11em] ${isLightMode ? 'text-[#16803C]' : 'text-emerald-300'}`}>Veg</span>
-                          {item.quantity && item.quantity !== '1 portion' && <span className={`truncate text-[10px] font-medium ${isLightMode ? 'text-slate-400' : 'text-white/45'}`}>· {item.quantity}</span>}
-                        </div>
-                        <h3 className={`line-clamp-2 text-[14px] font-extrabold leading-snug ${isLightMode ? 'text-slate-900' : 'text-white/95'}`}>{item.name}</h3>
-                        {item.description && <p className={`mt-1 line-clamp-1 text-[11px] font-medium leading-snug ${isLightMode ? 'text-slate-500' : 'text-white/55'}`}>{item.description}</p>}
+                      <div className="relative h-[92px] w-[92px] shrink-0 overflow-hidden rounded-[17px] bg-[#EAF1E9] ring-1 ring-[#D9AD49]/25">
+                        <Image src={item.image || currentCategory.image} alt={item.name} fill className="object-cover transition duration-500 group-hover:scale-105" sizes="92px" unoptimized />
+                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,15,15,.06)_35%,rgba(15,15,15,.30)_100%)]" />
+                        <span className="absolute left-1.5 top-1.5 grid h-6 w-6 place-items-center rounded-[8px] border border-white/70 bg-white/95 shadow-sm" aria-label="Vegetarian"><span className="h-2 w-2 rounded-full border border-[#16803C] p-[1px]"><span className="block h-full w-full rounded-full bg-[#16803C]" /></span></span>
                       </div>
-                      <span className={`shrink-0 rounded-xl border px-2.5 py-1.5 text-[13px] font-black tabular-nums ${isLightMode ? 'border-[#1E4D3D]/15 bg-[#F3F7F2] text-[#1E4D3D]' : 'border-[#E9C46A]/20 bg-black/25 text-[#F2D48E]'}`}>{item.price}</span>
+                      <div className="min-w-0 flex-1 py-1">
+                        <h3 className={`break-words text-[14px] font-extrabold leading-snug sm:text-[15px] ${isLightMode ? 'text-slate-900' : 'text-white/95'}`}>{item.name}</h3>
+                        {item.description && <p className={`mt-1 break-words text-[11px] font-medium leading-snug ${isLightMode ? 'text-slate-500' : 'text-white/60'}`}>{item.description}</p>}
+                        <div className="mt-2 flex flex-wrap items-center justify-between gap-1.5">
+                          {item.quantity && item.quantity !== '1 portion' ? <span className={`text-[10px] font-semibold ${isLightMode ? 'text-slate-400' : 'text-white/50'}`}>{item.quantity}</span> : <span className={`text-[9px] font-extrabold uppercase tracking-[.1em] ${isLightMode ? 'text-[#16803C]' : 'text-emerald-300'}`}>Vegetarian</span>}
+                          <span className={`shrink-0 rounded-xl border px-2.5 py-1 text-[13px] font-black tabular-nums ${isLightMode ? 'border-[#184D3B]/15 bg-[#EAF1E9] text-[#184D3B]' : 'border-white/15 bg-black/25 text-[#F2D48E]'}`}>{item.price}</span>
+                        </div>
+                      </div>
                     </motion.div>
                   ))}
+                  {browseItems.length === 0 && <div className="rounded-[22px] border border-dashed border-[#D9AD49]/35 bg-white px-5 py-10 text-center shadow-sm"><Search className="mx-auto h-6 w-6 text-[#184D3B]" /><p className="mt-3 text-[15px] font-extrabold text-slate-900">No matching dishes</p><p className="mt-1 text-[12px] font-medium text-slate-500">Try another search or choose a different category.</p><button type="button" onClick={() => setSearchQuery('')} className="mt-4 rounded-full bg-[#184D3B] px-4 py-2 text-[12px] font-bold text-white">Clear search</button></div>}
                 </motion.div>
               </AnimatePresence>
             )}

@@ -17,7 +17,7 @@ export default function MenuPreview() {
   return (
     <section id="menu" className="mx-auto w-full max-w-md py-8">
       <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: '-50px' }} transition={{ duration: .3 }} className="mb-6">
-        <div className="section-title-accent mb-3"><h2 className="text-left text-2xl font-bold tracking-tight text-white sm:text-3xl">Something Delicious Awaits</h2></div>
+        <div className="section-title-accent mb-3 min-w-0"><h2 className="whitespace-nowrap text-left text-[clamp(17px,5.2vw,22px)] font-bold tracking-tight text-white sm:text-3xl">Something Delicious Awaits</h2></div>
         <p className="text-left text-sm font-medium tracking-tight text-slate-300/90 sm:text-base">Explore your next favourite bite.</p>
       </motion.div>
 

@@ -83,7 +83,6 @@ export default function BusinessHoursBadge() {
             initial={{ y: 70, opacity: 0, scale: .95 }} animate={{ y: 0, opacity: 1, scale: 1 }} exit={{ y: 50, opacity: 0, scale: .97 }}
             transition={{ type: 'spring', stiffness: 300, damping: 27 }} onClick={(event) => event.stopPropagation()}
           >
-            <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-[#D9AD49]/20 blur-3xl" />
             <div className="relative mb-4 flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <span className="grid h-11 w-11 place-items-center rounded-2xl border border-white bg-white/75 text-[#184D3B] shadow-lg"><Clock3 className="h-5 w-5" /></span>

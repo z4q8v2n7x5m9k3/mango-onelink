@@ -41,12 +41,9 @@ export default function Home() {
         sessionStorage.removeItem('fromMenu')
         sessionStorage.removeItem('fromReviews')
 
-        setTimeout(() => {
-          if (window.location.hash) {
-            window.history.replaceState(null, '', window.location.pathname)
-          }
-          window.scrollTo(0, 0)
-        }, 50)
+        if (window.location.hash) {
+          window.history.replaceState(null, '', window.location.pathname)
+        }
         return
       }
     }
@@ -74,7 +71,6 @@ export default function Home() {
     if (!showLoading && typeof window !== 'undefined') {
       if (window.location.hash === '#gallery' || window.location.hash === '#menu' || window.location.hash === '#reviews') {
         window.history.replaceState(null, '', window.location.pathname)
-        window.scrollTo(0, 0)
       }
     }
   }, [showLoading])
